@@ -1,1 +1,1 @@
-# crk-gacha
+# Marvel Rivals Randomizer
