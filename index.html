@@ -1,1 +1,105 @@
-"hello world"
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="css/pico.min.css">
+    <script src="index.js"></script>
+    <title>Marvel Rivals Randomizer</title>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Marvel Rivals Randomizer</h1>
+
+      <!--Settings Section-->
+      <details open>
+        <summary>Settings</summary>
+        <input type="number" placeholder="Team Size" id="max-output">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Vanguard</th>
+              <th scope="col">Duelist</th>
+              <th scope="col">Strategist</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <input type="number" placeholder="Minimum" id="min-tank">
+              </td>
+              <td>
+                <input type="number" placeholder="Minimum" id="min-dps">
+              </td>
+              <td>
+                <input type="number" placeholder="Minimum" id="min-support">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="number" placeholder="Maximum" id="max-tank">
+              </td>
+              <td>
+                <input type="number" placeholder="Maximum" id="max-dps">
+              </td>
+              <td>
+                <input type="number" placeholder="Maximum" id="max-support">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
+
+
+      <details>
+        <summary>Heroes</summary>
+        <div class="grid">
+          <!--Tanks Section-->
+          <div>
+            <h3>Vanguards</h1>
+            <div role="group">
+              <button id="enable-tanks">Enable All</button>
+              <button id="disable-tanks">Disable All</button>
+            </div>
+            <fieldset id="tanklist">
+            </fieldset>
+          </div>
+
+          <!--DPS Section-->
+          <div>
+            <h3>Duelists</h1>
+            <div role="group">
+              <button id="enable-dps">Enable All</button>
+              <button id="disable-dps">Disable All</button>
+            </div>
+            <fieldset id="dpslist">
+            </fieldset>
+          </div>
+
+          <!--Healer Section-->
+          <div>
+            <h3>Strategists</h1>
+            <div role="group">
+              <button id="enable-supports">Enable All</button>
+              <button id="disable-supports">Disable All</button>
+            </div>
+            <fieldset id="supportlist">
+            </fieldset>
+          </div>
+        </div>
+      </details>
+
+      <section>
+        <button id="randomize">Randomize!</button>
+      </section>
+      
+      <section id="output-section">
+        <h3>Output</h3>
+        <div id="output">
+        </div>
+        <button class="secondary" id="disable-these-button">Disable these heroes</button>
+      </section>
+    </main>
+  </body>
+</html>
