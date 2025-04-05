@@ -174,7 +174,6 @@ const randomize = () => {
 		}
 	}
 
-	showOutputSection(true);
 	if (output.length > 0) showDisableThisButton(true);
 
 	const outputEl = document.getElementById("output");
@@ -279,14 +278,4 @@ window.onload = () => {
 	if (button !== null) {
 		button.onclick = disableRolledHeroes;
 	}
-
-	showOutputSection(false);
 }
-
-
-
-
-
-
-
-

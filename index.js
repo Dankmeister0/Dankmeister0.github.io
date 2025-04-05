@@ -169,7 +169,6 @@ var randomize = function () {
             }
         }
     }
-    showOutputSection(true);
     if (output.length > 0)
         showDisableThisButton(true);
     var outputEl = document.getElementById("output");
@@ -200,7 +199,7 @@ window.onload = function () {
     }
     fieldset = document.getElementById("dpslist");
     if (fieldset != null) {
-        appendHero(fieldset, dps, "Black panther");
+        appendHero(fieldset, dps, "Black Panther");
         appendHero(fieldset, dps, "Black Widow");
         appendHero(fieldset, dps, "Hawkeye");
         appendHero(fieldset, dps, "Hela");
@@ -263,5 +262,4 @@ window.onload = function () {
     if (button !== null) {
         button.onclick = disableRolledHeroes;
     }
-    showOutputSection(false);
 };
