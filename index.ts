@@ -168,6 +168,8 @@ const randomize = () => {
 	}
 
 	if (output.length > 0) showDisableThisButton(true);
+	shuffle(output);
+	rolledHeroes = output;
 
 	const outputEl = document.getElementById("output");
 	if (outputEl === null) return;
@@ -175,12 +177,17 @@ const randomize = () => {
 		outputEl.removeChild(outputEl.lastChild);
 	}
 
-	shuffle(output);
-	rolledHeroes = output;
 	output.forEach(element => {
+		const article = document.createElement("article");
+		article.style.textAlign = "center";
+		const img = document.createElement("img");
+		img.src = "img/" + element + ".png";
 		const name = document.createElement("h5");
 		name.textContent = element;
-		outputEl.appendChild(name);
+
+		article.appendChild(img);
+		article.appendChild(name);
+		outputEl.appendChild(article);
 	});
 }
 
@@ -194,6 +201,7 @@ window.onload = () => {
 		appendHero(fieldset, tanks, "Hulk");
 		appendHero(fieldset, tanks, "Magneto");
 		appendHero(fieldset, tanks, "Peni Parker");
+		appendHero(fieldset, tanks, "The Thing");
 		appendHero(fieldset, tanks, "Thor");
 		appendHero(fieldset, tanks, "Venom");
 	}
@@ -203,6 +211,7 @@ window.onload = () => {
 		appendHero(fieldset, dps, "Black Panther");
 		appendHero(fieldset, dps, "Black Widow");
 		appendHero(fieldset, dps, "Hawkeye");
+		appendHero(fieldset, dps, "Human Torch");
 		appendHero(fieldset, dps, "Hela");
 		appendHero(fieldset, dps, "Iron Fist");
 		appendHero(fieldset, dps, "Iron Man");

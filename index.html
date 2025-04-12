@@ -90,16 +90,21 @@
 				</div>
 			</details>
 
-			<article id="output-section">
-				<header>Output</header>
-
-				<button id="randomize">Randomize!</button>
-
-				<footer>
-					<div id="output"></div>
-					<button class="secondary" id="disable-these-button" style="visibility: hidden">Disable these heroes</button>
-				</footer>
-			</article>
+			<details open>
+				<summary>Output</summary>
+				<table>
+					<tr>
+						<td>
+							<button id="randomize">Randomize!</button>
+						</td>
+						<td style="text-align: right;">
+							<button class="secondary" id="disable-these-button" style="visibility: hidden">Disable these heroes</button>
+						</td>
+					</tr>
+				</table>
+				
+				<div id="output" class="grid"></div>
+			</details>
 		</main>
 	</body>
 </html>
