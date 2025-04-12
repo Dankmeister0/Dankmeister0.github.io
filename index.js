@@ -20,12 +20,6 @@ var getInputVal = function (id) {
     }
     return NaN;
 };
-var showOutputSection = function (show) {
-    var el = document.getElementById("output-section");
-    if (el) {
-        el.style.visibility = show ? "visible" : "hidden";
-    }
-};
 var showDisableThisButton = function (show) {
     var el = document.getElementById("disable-these-button");
     if (el) {
@@ -190,6 +184,7 @@ window.onload = function () {
     if (fieldset !== null) {
         appendHero(fieldset, tanks, "Captain America");
         appendHero(fieldset, tanks, "Doctor Strange");
+        appendHero(fieldset, tanks, "Emma Frost");
         appendHero(fieldset, tanks, "Groot");
         appendHero(fieldset, tanks, "Hulk");
         appendHero(fieldset, tanks, "Magneto");

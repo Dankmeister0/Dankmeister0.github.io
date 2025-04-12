@@ -26,13 +26,6 @@ const getInputVal = (id: string) => {
 	return NaN;
 }
 
-const showOutputSection = (show: boolean) => {
-	const el = document.getElementById("output-section");
-	if (el) {
-		el.style.visibility = show ? "visible" : "hidden";
-	}
-}
-
 const showDisableThisButton = (show: boolean) => {
 	const el = document.getElementById("disable-these-button");
 	if (el) {
@@ -196,6 +189,7 @@ window.onload = () => {
 	if (fieldset !== null) {
 		appendHero(fieldset, tanks, "Captain America");
 		appendHero(fieldset, tanks, "Doctor Strange");
+		appendHero(fieldset, tanks, "Emma Frost");
 		appendHero(fieldset, tanks, "Groot");
 		appendHero(fieldset, tanks, "Hulk");
 		appendHero(fieldset, tanks, "Magneto");
