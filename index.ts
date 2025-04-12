@@ -177,7 +177,14 @@ const randomize = () => {
 		outputEl.removeChild(outputEl.lastChild);
 	}
 
+	var row = document.createElement("div");
+	row.className = "grid";
 	output.forEach(element => {
+		if (row.childElementCount === 6) {
+			outputEl.appendChild(row);
+			row = document.createElement("div");
+			row.className = "grid";
+		}
 		const article = document.createElement("article");
 		article.style.textAlign = "center";
 		const img = document.createElement("img");
@@ -187,8 +194,9 @@ const randomize = () => {
 
 		article.appendChild(img);
 		article.appendChild(name);
-		outputEl.appendChild(article);
+		row.appendChild(article);
 	});
+	outputEl.appendChild(row);
 }
 
 window.onload = () => {

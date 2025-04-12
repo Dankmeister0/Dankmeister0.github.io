@@ -173,7 +173,14 @@ var randomize = function () {
     while (outputEl.lastChild) {
         outputEl.removeChild(outputEl.lastChild);
     }
+    var row = document.createElement("div");
+    row.className = "grid";
     output.forEach(function (element) {
+        if (row.childElementCount === 6) {
+            outputEl.appendChild(row);
+            row = document.createElement("div");
+            row.className = "grid";
+        }
         var article = document.createElement("article");
         article.style.textAlign = "center";
         var img = document.createElement("img");
@@ -182,8 +189,9 @@ var randomize = function () {
         name.textContent = element;
         article.appendChild(img);
         article.appendChild(name);
-        outputEl.appendChild(article);
+        row.appendChild(article);
     });
+    outputEl.appendChild(row);
 };
 window.onload = function () {
     var fieldset = document.getElementById("tanklist");
