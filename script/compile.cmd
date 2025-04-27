@@ -1,0 +1,1 @@
+tsc main.ts --outFile main.js --lib es2017,dom
