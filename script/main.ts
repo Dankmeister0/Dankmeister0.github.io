@@ -48,6 +48,7 @@ const Strategists = [
 	"Luna Snow",
 	"Mantis",
 	"Rocket Raccoon",
+	"Ultron",
 ] as const;
 type Strategist = typeof Strategists[number];
 
