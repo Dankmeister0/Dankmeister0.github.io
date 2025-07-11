@@ -177,6 +177,7 @@ var Duelists = [
     "Mister Fantastic",
     "Moon Knight",
     "Namor",
+    "Phoenix",
     "Psylocke",
     "Scarlet Witch",
     "Spider-Man",
