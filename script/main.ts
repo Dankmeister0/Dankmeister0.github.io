@@ -18,6 +18,7 @@ type Vanguard = typeof Vanguards[number];
 const Duelists = [
 	"Black Panther",
 	"Black Widow",
+	"Blade",
 	"Hawkeye",
 	"Human Torch",
 	"Hela",

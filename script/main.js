@@ -168,6 +168,7 @@ var Vanguards = [
 var Duelists = [
     "Black Panther",
     "Black Widow",
+    "Blade",
     "Hawkeye",
     "Human Torch",
     "Hela",
