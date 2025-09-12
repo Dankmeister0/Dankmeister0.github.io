@@ -154,6 +154,7 @@ var RatchetRef = /** @class */ (function () {
 ;
 /// <reference path = "ratchetReact.ts" />
 var Vanguards = [
+    "Angela",
     "Captain America",
     "Doctor Strange",
     "Emma Frost",

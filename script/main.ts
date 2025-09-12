@@ -2,6 +2,7 @@
 /// <reference path = "ratchetReact.ts" />
 
 const Vanguards = [
+	"Angela",
 	"Captain America",
 	"Doctor Strange",
 	"Emma Frost",
