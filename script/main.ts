@@ -20,6 +20,7 @@ const Duelists = [
 	"Black Panther",
 	"Black Widow",
 	"Blade",
+	"Daredevil",
 	"Hawkeye",
 	"Human Torch",
 	"Hela",
