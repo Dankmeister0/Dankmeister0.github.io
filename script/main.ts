@@ -46,6 +46,7 @@ type Duelist = typeof Duelists[number];
 const Strategists = [
 	"Adam Warlock",
 	"Cloak & Dagger",
+	"Gambit",
 	"Invisible Woman",
 	"Jeff the Land Shark",
 	"Loki",

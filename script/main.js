@@ -194,6 +194,7 @@ var Duelists = [
 var Strategists = [
     "Adam Warlock",
     "Cloak & Dagger",
+    "Gambit",
     "Invisible Woman",
     "Jeff the Land Shark",
     "Loki",
