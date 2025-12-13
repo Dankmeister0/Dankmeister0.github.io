@@ -10,6 +10,7 @@ const Vanguards = [
 	"Hulk",
 	"Magneto",
 	"Peni Parker",
+	"Rogue",
 	"The Thing",
 	"Thor",
 	"Venom"
