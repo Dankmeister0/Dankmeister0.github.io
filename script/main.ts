@@ -4,6 +4,7 @@
 const Vanguards = [
 	"Angela",
 	"Captain America",
+	"Deadpool (Vanguard)",
 	"Doctor Strange",
 	"Emma Frost",
 	"Groot",
@@ -22,6 +23,7 @@ const Duelists = [
 	"Black Widow",
 	"Blade",
 	"Daredevil",
+	"Deadpool (Duelist)",
 	"Hawkeye",
 	"Human Torch",
 	"Hela",
@@ -47,6 +49,7 @@ type Duelist = typeof Duelists[number];
 const Strategists = [
 	"Adam Warlock",
 	"Cloak & Dagger",
+	"Deadpool (Strategist)",
 	"Gambit",
 	"Invisible Woman",
 	"Jeff the Land Shark",
@@ -446,24 +449,54 @@ function randomize(): (Vanguard | Duelist | Strategist)[] {
 		if (enabled) strategists.push(hero as Strategist);
 	}
 
+	let removeDeadpools = () => {
+		let deadpoolPos = vanguards.findIndex((val) => val == "Deadpool (Vanguard)");
+		if (deadpoolPos !== -1) vanguards.splice(deadpoolPos, 1);
+		deadpoolPos = duelists.findIndex((val) => val == "Deadpool (Duelist)");
+		if (deadpoolPos !== -1) duelists.splice(deadpoolPos, 1);
+		deadpoolPos = strategists.findIndex((val) => val == "Deadpool (Strategist)");
+		if (deadpoolPos !== -1) strategists.splice(deadpoolPos, 1);
+	};
+
 	// Get the minimum amount of each role
-	for (let i = 0; i < minVanguard; ++i) {
-		const rand = Math.floor(Math.random() * vanguards.length);
-		results.push(vanguards[rand]);
-		vanguards.splice(rand, 1);
-		++vanguardCnt;
-	}
-	for (let i = 0; i < minDuelist; ++i) {
-		const rand = Math.floor(Math.random() * duelists.length);
-		results.push(duelists[rand]);
-		duelists.splice(rand, 1);
-		++duelistCnt;
-	}
-	for (let i = 0; i < minStrategist; ++i) {
-		const rand = Math.floor(Math.random() * strategists.length);
-		results.push(strategists[rand]);
-		strategists.splice(rand, 1);
-		++strategistCnt;
+	// We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
+	const getMinOfRole = [
+		() => {
+			for (let i = 0; i < minVanguard; ++i) {
+				if (vanguards.length === 0) break;
+				const rand = Math.floor(Math.random() * vanguards.length);
+				results.push(vanguards[rand]);
+				if (vanguards[rand] == "Deadpool (Vanguard)") removeDeadpools();
+				else vanguards.splice(rand, 1);
+				++vanguardCnt;
+			}
+		},
+		() => {
+			for (let i = 0; i < minDuelist; ++i) {
+				if (duelists.length === 0) break;
+				const rand = Math.floor(Math.random() * duelists.length);
+				results.push(duelists[rand]);
+				if (duelists[rand] == "Deadpool (Duelist)") removeDeadpools();
+				else duelists.splice(rand, 1);
+				++duelistCnt;
+				
+			}
+		},
+		() => {
+			for (let i = 0; i < minStrategist; ++i) {
+				if (strategists.length === 0) break;
+				const rand = Math.floor(Math.random() * strategists.length);
+				results.push(strategists[rand]);
+				if (strategists[rand] == "Deadpool (Strategist)") removeDeadpools();
+				else strategists.splice(rand, 1);
+				++strategistCnt;
+			}
+		}
+	];
+
+	const randRoleOrder = Math.floor(Math.random() * 3);
+	for (let i = 0; i < 3; ++i) {
+		getMinOfRole[(randRoleOrder + i) % 3]();
 	}
 
 	// Build array of all allowed heroes
@@ -497,7 +530,18 @@ function randomize(): (Vanguard | Duelist | Strategist)[] {
 		const rand = Math.floor(Math.random() * all.length);
 		const hero = all[rand];
 		results.push(hero);
-		all.splice(rand, 1);
+
+		if (hero == "Deadpool (Vanguard)" || hero == "Deadpool (Duelist)" || hero == "Deadpool (Strategist)") {
+			let deadpoolPos = all.findIndex((val) => val == "Deadpool (Vanguard)");
+			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
+			deadpoolPos = all.findIndex((val) => val == "Deadpool (Duelist)");
+			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
+			deadpoolPos = all.findIndex((val) => val == "Deadpool (Strategist)");
+			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
+		}
+		else {
+			all.splice(rand, 1);
+		}
 
 		if (Vanguards.includes(hero as Vanguard)) {
 			++vanguardCnt;
