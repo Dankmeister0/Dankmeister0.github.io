@@ -24,6 +24,7 @@ const Duelists = [
 	"Blade",
 	"Daredevil",
 	"Deadpool (Duelist)",
+	"Elsa Bloodstone",
 	"Hawkeye",
 	"Human Torch",
 	"Hela",
