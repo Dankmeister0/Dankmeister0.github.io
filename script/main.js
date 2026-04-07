@@ -207,6 +207,7 @@ var Strategists = [
     "Mantis",
     "Rocket Raccoon",
     "Ultron",
+    "White Fox",
 ];
 var gData = {
     teamSize: NaN,
