@@ -1,67 +1,6 @@
 
 /// <reference path = "ratchetReact.ts" />
-
-const Vanguards = [
-	"Angela",
-	"Captain America",
-	"Deadpool (Vanguard)",
-	"Doctor Strange",
-	"Emma Frost",
-	"Groot",
-	"Hulk",
-	"Magneto",
-	"Peni Parker",
-	"Rogue",
-	"The Thing",
-	"Thor",
-	"Venom"
-] as const;
-type Vanguard = typeof Vanguards[number];
-
-const Duelists = [
-	"Black Panther",
-	"Black Widow",
-	"Blade",
-	"Daredevil",
-	"Deadpool (Duelist)",
-	"Elsa Bloodstone",
-	"Hawkeye",
-	"Human Torch",
-	"Hela",
-	"Iron Fist",
-	"Iron Man",
-	"Magik",
-	"Mister Fantastic",
-	"Moon Knight",
-	"Namor",
-	"Phoenix",
-	"Psylocke",
-	"Scarlet Witch",
-	"Spider-Man",
-	"Squirrel Girl",
-	"Star-Lord",
-	"Storm",
-	"The Punisher",
-	"Winter Soldier",
-	"Wolverine",
-] as const;
-type Duelist = typeof Duelists[number];
-
-const Strategists = [
-	"Adam Warlock",
-	"Cloak & Dagger",
-	"Deadpool (Strategist)",
-	"Gambit",
-	"Invisible Woman",
-	"Jeff the Land Shark",
-	"Loki",
-	"Luna Snow",
-	"Mantis",
-	"Rocket Raccoon",
-	"Ultron",
-	"White Fox",
-] as const;
-type Strategist = typeof Strategists[number];
+/// <reference path = "defs.ts" />
 
 const gData = {
 	teamSize: NaN,
@@ -75,290 +14,295 @@ const gData = {
 	selectedVanguards: {} as {[key: string]: boolean},
 	selectedDuelists: {} as {[key: string]: boolean},
 	selectedStrategists: {} as {[key: string]: boolean},
+
+	allowDuplicates: false,
+	prioritizeTeamups: false,
 };
 
 const gHandlers = {
 	disableHeroes: (() => {}) as (list: Array<Vanguard | Duelist | Strategist>) => void,
 };
 
-window.onload = () => {
-	gData.selectedDuelists[""]
-	const main = document.getElementById("main");
-	if (!main) return;
-
-	main.appendChild(TeamSettings().elem());
-	main.appendChild(RandomizeSection().elem());
-	main.appendChild(HeroSettings().elem());
-};
+RatchetReact.Root = (
+	RatchetReact.New("main").set("className", "container").open()
+		.add("h1").set("textContent", "Marvel Rivals Randomizer").setRaw("style", "text-align: center;")
+		.addRef(TeamSettings())
+		.addRef(RandomizeSection())
+		.addRef(HeroSettings())
+		.addRef(MiscSettings())
+	.close()
+);
 
 function TeamSettings(): RatchetReact<HTMLElement> {
-	const partySize = RatchetRef.Use("input");
-	const minVanguard = RatchetRef.Use("input");
-	const maxVanguard = RatchetRef.Use("input");
-	const minDuelist = RatchetRef.Use("input");
-	const maxDuelist = RatchetRef.Use("input");
-	const minStrategist = RatchetRef.Use("input");
-	const maxStrategist = RatchetRef.Use("input");
-	const partySizeErr = RatchetRef.Use("small");
+	const partySizeRef = RatchetReact.New("input");
+	const minVanguardRef = RatchetReact.New("input");
+	const maxVanguardRef = RatchetReact.New("input");
+	const minDuelistRef = RatchetReact.New("input");
+	const maxDuelistRef = RatchetReact.New("input");
+	const minStrategistRef = RatchetReact.New("input");
+	const maxStrategistRef = RatchetReact.New("input");
+	const partySizeErrRef = RatchetReact.New("small");
 
 	const updateDefaultPartySize = () => {
-		if (!partySize.elem) return;
-		partySize.elem.set("placeholder", getDefaultTeamSize().toString());
+		partySizeRef.set("placeholder", getDefaultTeamSize().toString());
 	}
 
 	const validatePartySize = () => {
-		if (!partySize.elem) return;
-		gData.teamSize = partySize.elem.get("valueAsNumber");
+		gData.teamSize = partySizeRef.get("valueAsNumber");
 		if (gData.teamSize < 1) {
-			partySize.elem.set("ariaInvalid", "true");
-			partySizeErr.elem?.text("Party size must be at least 1");
+			partySizeRef.set("ariaInvalid", "true");
+			partySizeErrRef.set("textContent", "Party size must be at least 1");
 		}
 		else if (gData.teamSize < getMinTeamSize()) {
-			partySize.elem.set("ariaInvalid", "true");
-			partySizeErr.elem?.text("The math ain't mathing. The party size must be at least " + getMinTeamSize());
+			partySizeRef.set("ariaInvalid", "true");
+			partySizeErrRef.set("textContent", "The math ain't mathing. The party size must be at least " + getMinTeamSize());
 		}
-		else if (getMaxTeamSize() && gData.teamSize > (getMaxTeamSize() as number)) {
-			partySize.elem.set("ariaInvalid", "true");
-			partySizeErr.elem?.text("The math ain't mathing. The party size must be at most " + getMaxTeamSize());
+		else if (gData.teamSize > getMaxTeamSize()) {
+			partySizeRef.set("ariaInvalid", "true");
+			partySizeErrRef.set("textContent", "The math ain't mathing. The party size must be at most " + getMaxTeamSize());
 		}
 		else {
-			partySize.elem.set("ariaInvalid", "");
-			partySizeErr.elem?.text("");
+			partySizeRef.set("ariaInvalid", "");
+			partySizeErrRef.set("textContent", "");
 		}
 	};
 
-	const validateMinMax = (minRef: RatchetRef<HTMLInputElement>, maxRef: RatchetRef<HTMLInputElement>) => {
+	const validateMinMax = (minRef: RatchetReact<HTMLInputElement>, maxRef: RatchetReact<HTMLInputElement>) => {
 		if (!minRef.elem || !maxRef.elem) return;
 
-		if (minRef === minVanguard) {
-			gData.minVanguard = minRef.elem.get("valueAsNumber");
-			gData.maxVanguard = maxRef.elem.get("valueAsNumber");
+		if (minRef === minVanguardRef) {
+			gData.minVanguard = minRef.get("valueAsNumber");
+			gData.maxVanguard = maxRef.get("valueAsNumber");
 		}
-		else if (minRef === minDuelist) {
-			gData.minDuelist = minRef.elem.get("valueAsNumber");
-			gData.maxDuelist = maxRef.elem.get("valueAsNumber");
+		else if (minRef === minDuelistRef) {
+			gData.minDuelist = minRef.get("valueAsNumber");
+			gData.maxDuelist = maxRef.get("valueAsNumber");
 		}
 		else {
-			gData.minStrategist = minRef.elem.get("valueAsNumber");
-			gData.maxStrategist = maxRef.elem.get("valueAsNumber");
+			gData.minStrategist = minRef.get("valueAsNumber");
+			gData.maxStrategist = maxRef.get("valueAsNumber");
 		}
 
-		if (minRef.elem.get("valueAsNumber") > maxRef.elem.get("valueAsNumber")) {
-			minRef.elem.set("ariaInvalid", "true");
-			maxRef.elem.set("ariaInvalid", "true");
+		if (minRef.get("valueAsNumber") > maxRef.get("valueAsNumber")) {
+			minRef.set("ariaInvalid", "true");
+			maxRef.set("ariaInvalid", "true");
 		}
 		else {
-			minRef.elem.set("ariaInvalid", "");
-			maxRef.elem.set("ariaInvalid", "");
+			minRef.set("ariaInvalid", "");
+			maxRef.set("ariaInvalid", "");
 		}
 
 		updateDefaultPartySize();
 	}
 
 	return (
-		RatchetReact.New("article")
-			.child("header", "style", "text-align: center;")
-				.child("h3").text("Team")
-			.parent()
-		.parent()
-			.child("label").text("Party Size")
-				.child("input", "type", "number", "placeholder", "1").ref(partySize).set("oninput", validatePartySize)
-			.parent()
-				.child("small").ref(partySizeErr)
-			.parent()
-		.parent()
-			.child("div", "class", "grid")
-				.child("label").text("Vanguard")
-					.child("div", "role", "group")
-						.child("input", "type", "number", "placeholder", "Min").ref(minVanguard).set("oninput", () => validateMinMax(minVanguard, maxVanguard))
-					.parent()
-						.child("input", "type", "number", "placeholder", "Max").ref(maxVanguard).set("oninput", () => validateMinMax(minVanguard, maxVanguard))
-					.parent()
-				.parent()
-			.parent()
-				.child("label").text("Duelist")
-					.child("div", "role", "group")
-						.child("input", "type", "number", "placeholder", "Min").ref(minDuelist).set("oninput", () => validateMinMax(minDuelist, maxDuelist))
-					.parent()
-						.child("input", "type", "number", "placeholder", "Max").ref(maxDuelist).set("oninput", () => validateMinMax(minDuelist, maxDuelist))
-					.parent()
-				.parent()
-			.parent()
-				.child("label").text("Strategist")
-					.child("div", "role", "group")
-						.child("input", "type", "number", "placeholder", "Min").ref(minStrategist).set("oninput", () => validateMinMax(minStrategist, maxStrategist))
-					.parent()
-						.child("input", "type", "number", "placeholder", "Max").ref(maxStrategist).set("oninput", () => validateMinMax(minStrategist, maxStrategist))
-					.parent()
-				.parent()
-			.parent()
-		.parent()
+		RatchetReact.New("article").open()
+			.add("header").setRaw("style", "text-align: center;").open()
+				.add("h3").set("textContent", "Team")
+			.close()
+			.add("label").open()
+				.addRaw("Party Size")
+				.addRef(partySizeRef).set("type", "number").set("placeholder", "1").set("oninput", validatePartySize)
+				.addRef(partySizeErrRef)
+			.close()
+			.add("div").set("className", "grid").open()
+				.add("label").set("textContent", "Vanguard").open()
+					.add("div").set("role", "group").open()
+						.addRef(minVanguardRef).set("type", "number").set("placeholder", "Min").set("oninput", () => validateMinMax(minVanguardRef, maxVanguardRef))
+						.addRef(maxVanguardRef).set("type", "number").set("placeholder", "Max").set("oninput", () => validateMinMax(minVanguardRef, maxVanguardRef))
+					.close()
+				.close()
+				.add("label").set("textContent", "Duelist").open()
+					.add("div").set("role", "group").open()
+						.addRef(minDuelistRef).set("type", "number").set("placeholder", "Min").set("oninput", () => validateMinMax(minDuelistRef, maxDuelistRef))
+						.addRef(maxDuelistRef).set("type", "number").set("placeholder", "Max").set("oninput", () => validateMinMax(minDuelistRef, maxDuelistRef))
+					.close()
+				.close()
+				.add("label").set("textContent", "Strategist").open()
+					.add("div").set("role", "group").open()
+						.addRef(minStrategistRef).set("type", "number").set("placeholder", "Min").set("oninput", () => validateMinMax(minStrategistRef, maxStrategistRef))
+						.addRef(maxStrategistRef).set("type", "number").set("placeholder", "Max").set("oninput", () => validateMinMax(minStrategistRef, maxStrategistRef))
+					.close()
+				.close()
+			.close()
+		.close()
 	);
 }
 
 function HeroSettings(): RatchetReact<HTMLElement> {
-	const disableVanguard = RatchetRef.Use("input");
-	const enableVanguard = RatchetRef.Use("input");
-	const disableDuelist = RatchetRef.Use("input");
-	const enableDuelist = RatchetRef.Use("input");
-	const disableStrategist = RatchetRef.Use("input");
-	const enableStrategist = RatchetRef.Use("input");
-	const vanguardList = RatchetRef.Use("fieldset");
-	const duelistList = RatchetRef.Use("fieldset");
-	const strategistList = RatchetRef.Use("fieldset");
+	const disableVanguardRef = RatchetReact.New("input");
+	const enableVanguardRef = RatchetReact.New("input");
+	const disableDuelistRef = RatchetReact.New("input");
+	const enableDuelistRef = RatchetReact.New("input");
+	const disableStrategistRef = RatchetReact.New("input");
+	const enableStrategistRef = RatchetReact.New("input");
+	const vanguardListRef = RatchetReact.New("fieldset");
+	const duelistListRef = RatchetReact.New("fieldset");
+	const strategistListRef = RatchetReact.New("fieldset");
 
-	const onEnableAll = (list: RatchetRef<HTMLFieldSetElement>, enable: boolean) => {
-		if (!list.elem) return;
-		for (let i = 0; i < list.elem.elem().childElementCount; ++i) {
-			const checkbox = list.elem.getChild(i).getChild(0) as RatchetReact<HTMLInputElement>;
-			checkbox.set("checked", enable);
-			checkbox.elem().onchange!(new Event(""));
+	const onEnableAll = (list: RatchetReact<HTMLFieldSetElement>, enable: boolean) => {
+		for (const child of Array.from(list.get("children"))) {
+			const checkbox = child.firstChild as HTMLInputElement;
+			checkbox.checked = enable;
+			if (checkbox.onchange) checkbox.onchange(new Event(""));
 		}
 	}
 
-	gHandlers.disableHeroes = (list: Array<Vanguard | Duelist | Strategist>) => {
-		let fieldset: RatchetRef<HTMLFieldSetElement>;
+	gHandlers.disableHeroes = (list: Hero[]) => {
+		let fieldset: RatchetReact<HTMLFieldSetElement>;
 		for (const hero of list) {
-			if (Vanguards.includes(hero as Vanguard)) {
-				fieldset = vanguardList;
+			if (isVanguard(hero)) {
+				fieldset = vanguardListRef;
 			}
-			else if (Duelists.includes(hero as Duelist)) {
-				fieldset = duelistList;
+			else if (isDuelist(hero)) {
+				fieldset = duelistListRef;
 			}
 			else {
-				fieldset = strategistList;
+				fieldset = strategistListRef;
 			}
-			if (!fieldset.elem) continue;
 
-			for (let i = 0; i < fieldset.elem.elem().childElementCount; ++i) {
-				const checkbox = fieldset.elem.getChild(i).getChild(0) as RatchetReact<HTMLInputElement>;
-				if (checkbox.get("id") === hero) {
-					checkbox.set("checked", false);
-					checkbox.elem().onchange!(new Event(""));
-					continue;
+			for (const child of Array.from(fieldset.get("children"))) {
+				const checkbox = child.firstChild as HTMLInputElement;
+				if (checkbox.id === hero) {
+					checkbox.checked = false;
+					if (checkbox.onchange) checkbox.onchange(new Event(""));
+					break;
 				}
 			}
 		}
 	}
 
-	const article = (
-		RatchetReact.New("article")
-			.child("header", "style", "text-align: center;")
-				.child("h3").text("Heroes")
-			.parent()
-		.parent()
-			.child("div", "class", "grid")
-				.child("div")
-					.child("div", "role", "group")
-						.child("input", "type", "submit", "value", "Disable All").ref(disableVanguard).set("onclick", () => onEnableAll(vanguardList, false))
-					.parent()
-						.child("input", "type", "submit", "value", "Enable All").ref(enableVanguard).set("onclick", () => onEnableAll(vanguardList, true))
-					.parent()
-				.parent()
-					.child("fieldset").ref(vanguardList)
-				.parent()
-			.parent()
-				.child("div")
-					.child("div", "role", "group")
-						.child("input", "type", "submit", "value", "Disable All").ref(disableDuelist).set("onclick", () => onEnableAll(duelistList, false))
-					.parent()
-						.child("input", "type", "submit", "value", "Enable All").ref(enableDuelist).set("onclick", () => onEnableAll(duelistList, true))
-					.parent()
-				.parent()
-					.child("fieldset").ref(duelistList)
-				.parent()
-			.parent()
-				.child("div")
-					.child("div", "role", "group")
-						.child("input", "type", "submit", "value", "Disable All").ref(disableStrategist).set("onclick", () => onEnableAll(strategistList, false))
-					.parent()
-						.child("input", "type", "submit", "value", "Enable All").ref(enableStrategist).set("onclick", () => onEnableAll(strategistList, true))
-					.parent()
-				.parent()
-					.child("fieldset").ref(strategistList)
-				.parent()
-			.parent()
-		.parent()
-	);
-
+	vanguardListRef.open();
 	for (const vanguard of Vanguards) {
-		vanguardList.elem?.append(HeroEntry(vanguard, gData.selectedVanguards));
+		vanguardListRef.addRef(HeroEntry(vanguard, gData.selectedVanguards));
 	}
+	vanguardListRef.close();
 
+	duelistListRef.open();
 	for (const duelist of Duelists) {
-		duelistList.elem?.append(HeroEntry(duelist, gData.selectedDuelists));
+		duelistListRef.addRef(HeroEntry(duelist, gData.selectedDuelists));
 	}
+	duelistListRef.close();
 
+	strategistListRef.open()
 	for (const strategist of Strategists) {
-		strategistList.elem?.append(HeroEntry(strategist, gData.selectedStrategists));
+		strategistListRef.addRef(HeroEntry(strategist, gData.selectedStrategists));
 	}
+	strategistListRef.close();
 
-	return article;
+	return (
+		RatchetReact.New("article").open()
+			.add("header").setRaw("style", "text-align: center;").open()
+				.add("h3").set("textContent", "Heroes")
+			.close()
+			.add("div").set("className", "grid").open()
+				.add("div").open()
+					.add("div").set("role", "group").open()
+						.addRef(disableVanguardRef).set("type", "submit").set("value", "Disable All").set("onclick", () => onEnableAll(vanguardListRef, false))
+						.addRef(enableVanguardRef).set("type", "submit").set("value", "Enable All").set("onclick", () => onEnableAll(vanguardListRef, true))
+					.close()
+					.addRef(vanguardListRef)
+				.close()
+				.add("div").open()
+					.add("div").set("role", "group").open()
+						.addRef(disableDuelistRef).set("type", "submit").set("value", "Disable All").set("onclick", () => onEnableAll(duelistListRef, false))
+						.addRef(enableDuelistRef).set("type", "submit").set("value", "Enable All").set("onclick", () => onEnableAll(duelistListRef, true))
+					.close()
+					.addRef(duelistListRef)
+				.close()
+				.add("div").open()
+					.add("div").set("role", "group").open()
+						.addRef(disableStrategistRef).set("type", "submit").set("value", "Disable All").set("onclick", () => onEnableAll(strategistListRef, false))
+						.addRef(enableStrategistRef).set("type", "submit").set("value", "Enable All").set("onclick", () => onEnableAll(strategistListRef, true))
+					.close()
+					.addRef(strategistListRef)
+				.close()
+			.close()
+		.close()
+	);
 }
 
-function HeroEntry(hero: Vanguard | Duelist | Strategist, heroList: {[key: string]: boolean}): RatchetReact<HTMLLabelElement> {
-	const checkbox = RatchetRef.Use("input");
+function HeroEntry(hero: Hero, heroList: {[key: string]: boolean}): RatchetReact<HTMLElement> {
+	const checkbox = RatchetReact.New("input");
+	heroList[hero] = true;
 
-	const onChange = () => {
-		if (!checkbox.elem) return;
-		heroList[hero] = checkbox.elem.get("checked");
-	};
-
-	const label: RatchetReact<HTMLLabelElement> = (
-		RatchetReact.New("label")
-			.child("input", "type", "checkbox", "checked", "", "id", hero).ref(checkbox).set("onchange", onChange)
-		.parent()
+	return (
+		RatchetReact.New("label").open()
+			.addRef(checkbox).set("type", "checkbox").set("checked", true).set("id", hero).set("onchange", () => heroList[hero] = checkbox.get("checked"))
+			.addRaw(hero)
+		.close()
 	);
-	label.elem().insertAdjacentText("beforeend", hero);
-	onChange();
-	return label;
+}
+
+function MiscSettings(): RatchetReact<HTMLElement> {
+	const allowDuplicatesRef = RatchetReact.New("input");
+	const prioritizeTeamupsRef = RatchetReact.New("input");
+
+	return (
+		RatchetReact.New("article").open()
+			.add("header").setRaw("style", "text-align: center;").open()
+				.add("h3").set("textContent", "Misc Settings")
+			.close()
+			.add("label").open()
+				.addRef(allowDuplicatesRef).set("type", "checkbox").set("onchange", () => gData.allowDuplicates = allowDuplicatesRef.get("checked"))
+				.addRaw("Allow Duplicates")
+			.close()
+			.add("label").open()
+				.addRef(prioritizeTeamupsRef).set("type", "checkbox").set("onchange", () => gData.prioritizeTeamups = prioritizeTeamupsRef.get("checked"))
+				.addRaw("Increase Odds of Teamups")
+			.close()
+		.close()
+	);
 }
 
 function RandomizeSection(): RatchetReact<HTMLElement> {
-	const results = RatchetRef.Use("div");
-	const disableHeroes = RatchetRef.Use("input");
-	let res: Array<Vanguard | Duelist | Strategist> = [];
+	const resultsRef = RatchetReact.New("div");
+	const disableHeroesRef = RatchetReact.New("input");
+	let res: Hero[] = [];
 
 	const onRandomize = () => {
-		if (!results.elem) return;
 		res = randomize();
-		if (res.length > 0) disableHeroes.elem?.set("hidden", false);
-		results.elem.elem().setAttribute("style", "min-height: " + results.elem.get("offsetHeight") + "px;");
-		results.elem.removeChildren();
 
+		if (res.length > 0) disableHeroesRef.set("hidden", false);
+		if (res.length === 1) disableHeroesRef.set("value", "Disable This Hero");
+		else disableHeroesRef.set("value", "Disable These Heroes");
+
+		resultsRef.setRaw("style", "min-height: " + resultsRef.get("offsetHeight") + "px;");
+		resultsRef.elem().replaceChildren();
+
+		resultsRef.open();
+		let row = resultsRef.add("div").set("className", "grid");
 		let cnt = 0;
-		let row = results.elem.child("div", "class", "grid");
 		for (const hero of res) {
-			row.child("div", "style", "text-align: center;")
-				.child("img", "src", "img/" + hero + ".png").set("onload", () => results.elem?.elem().setAttribute("style", ""))
-			.parent()
-				.child("h5").text(hero)
-			.parent()
+			row.open()
+				.add("div").setRaw("style", "text-align: center;").open()
+					.add("img").set("src", "img/" + hero + ".png").set("onload", () => resultsRef.setRaw("style", ""))
+					.add("h5").set("textContent", hero)
+				.close()
+			.close();
 
 			++cnt;
 			if (cnt % 6 === 0) {
-				row = results.elem.child("div", "class", "grid")
+				row = resultsRef.add("div").set("className", "grid")
 			}
 		}
+		resultsRef.close();
 	};
 
 	const onDisableHeroes = () => {
 		gHandlers.disableHeroes(res);
-		disableHeroes.elem?.set("hidden", true);
+		disableHeroesRef.set("hidden", true);
 	}
 
 	return (
-		RatchetReact.New("article")
-			.child("header", "style", "text-align: center;")
-				.child("h3").text("Results")
-			.parent()
-		.parent()
-			.child("input", "type", "submit", "value", "Randomize").set("onclick", onRandomize)
-		.parent()
-			.child("div").ref(results)
-		.parent()
-			.child("input", "type", "submit", "value", "Disable These Heroes", "class", "secondary", "hidden", "").ref(disableHeroes).set("onclick", onDisableHeroes)
-		.parent()
+		RatchetReact.New("article").open()
+			.add("header").setRaw("style", "text-align: center;").open()
+				.add("h3").set("textContent", "Results")
+			.close()
+			.add("input").set("type", "submit").set("value", "Randomize").set("onclick", onRandomize)
+			.addRef(resultsRef)
+			.addRef(disableHeroesRef).set("type", "submit").set("className", "secondary").set("hidden", true).set("onclick", onDisableHeroes)
+		.close()
 	);
 }
 
@@ -376,20 +320,20 @@ function getMinTeamSize(): number {
 	return teamSize < 1 ? 1 : teamSize;
 }
 
-function getMaxTeamSize(): number | null {
+function getMaxTeamSize(): number {
 	let teamSize = 0;
 	if (!Number.isNaN(gData.maxVanguard)) {
 		teamSize += gData.maxVanguard;
 	}
-	else return null;
+	else return 1000;
 	if (!Number.isNaN(gData.maxDuelist)) {
 		teamSize += gData.maxDuelist;
 	}
-	else return null;
+	else return 1000;
 	if (!Number.isNaN(gData.maxStrategist)) {
 		teamSize += gData.maxStrategist;
 	}
-	else return null;
+	else return 1000;
 	return teamSize;
 }
 
@@ -418,7 +362,7 @@ function getDefaultTeamSize(): number {
 	return teamSize < 1 ? 1 : teamSize;
 }
 
-function randomize(): (Vanguard | Duelist | Strategist)[] {
+function randomize(): Hero[] {
 	const teamSize = Number.isNaN(gData.teamSize) ? getDefaultTeamSize() : gData.teamSize;
 
 	const minVanguard = Number.isNaN(gData.minVanguard) ? 0 : gData.minVanguard;
@@ -437,82 +381,50 @@ function randomize(): (Vanguard | Duelist | Strategist)[] {
 	const duelists = [] as Duelist[];
 	const strategists = [] as Strategist[];
 
-	const all = [] as (Vanguard | Duelist | Strategist)[];
-	const results = [] as (Vanguard | Duelist | Strategist)[];
+	const all = [] as Hero[];
+	const results = [] as Hero[];
 
 	// Build lists of allowed heroes of each role
 	for (const [hero, enabled] of Object.entries(gData.selectedVanguards)) {
-		if (enabled) vanguards.push(hero as Vanguard);
+		if (enabled) {
+			vanguards.push(hero as Vanguard);
+			all.push(hero as Hero);
+		}
 	}
 	for (const [hero, enabled] of Object.entries(gData.selectedDuelists)) {
-		if (enabled) duelists.push(hero as Duelist);
+		if (enabled) {
+			duelists.push(hero as Duelist);
+			all.push(hero as Hero);
+		}
 	}
 	for (const [hero, enabled] of Object.entries(gData.selectedStrategists)) {
-		if (enabled) strategists.push(hero as Strategist);
-	}
-
-	let removeDeadpools = () => {
-		let deadpoolPos = vanguards.findIndex((val) => val == "Deadpool (Vanguard)");
-		if (deadpoolPos !== -1) vanguards.splice(deadpoolPos, 1);
-		deadpoolPos = duelists.findIndex((val) => val == "Deadpool (Duelist)");
-		if (deadpoolPos !== -1) duelists.splice(deadpoolPos, 1);
-		deadpoolPos = strategists.findIndex((val) => val == "Deadpool (Strategist)");
-		if (deadpoolPos !== -1) strategists.splice(deadpoolPos, 1);
-	};
-
-	// Get the minimum amount of each role
-	// We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
-	const getMinOfRole = [
-		() => {
-			for (let i = 0; i < minVanguard; ++i) {
-				if (vanguards.length === 0) break;
-				const rand = Math.floor(Math.random() * vanguards.length);
-				results.push(vanguards[rand]);
-				if (vanguards[rand] == "Deadpool (Vanguard)") removeDeadpools();
-				else vanguards.splice(rand, 1);
-				++vanguardCnt;
-			}
-		},
-		() => {
-			for (let i = 0; i < minDuelist; ++i) {
-				if (duelists.length === 0) break;
-				const rand = Math.floor(Math.random() * duelists.length);
-				results.push(duelists[rand]);
-				if (duelists[rand] == "Deadpool (Duelist)") removeDeadpools();
-				else duelists.splice(rand, 1);
-				++duelistCnt;
-				
-			}
-		},
-		() => {
-			for (let i = 0; i < minStrategist; ++i) {
-				if (strategists.length === 0) break;
-				const rand = Math.floor(Math.random() * strategists.length);
-				results.push(strategists[rand]);
-				if (strategists[rand] == "Deadpool (Strategist)") removeDeadpools();
-				else strategists.splice(rand, 1);
-				++strategistCnt;
-			}
+		if (enabled) {
+			strategists.push(hero as Strategist);
+			all.push(hero as Hero);
 		}
-	];
-
-	const randRoleOrder = Math.floor(Math.random() * 3);
-	for (let i = 0; i < 3; ++i) {
-		getMinOfRole[(randRoleOrder + i) % 3]();
 	}
 
-	// Build array of all allowed heroes
-	for (const hero of vanguards) {
-		all.push(hero);
-	}
-	for (const hero of duelists) {
-		all.push(hero);
-	}
-	for (const hero of strategists) {
-		all.push(hero);
+	// Checks if a given hero can be selected
+	const isHeroAllowed = (hero: Hero, strict: boolean) => {
+		if (!all.includes(hero)) return false;
+		if (results.length == teamSize) return false;
+
+		if (isVanguard(hero)) {
+			if (strict) return vanguardCnt < minVanguard;
+			return vanguardCnt < maxVanguard;
+		}
+		if (isDuelist(hero)) {
+			if (strict) return duelistCnt < minDuelist;
+			return duelistCnt < maxDuelist;
+		}
+		if (isStrategist(hero)) {
+			if (strict) return strategistCnt < minStrategist;
+			return strategistCnt < maxStrategist;
+		}
+		return false;
 	}
 
-	// Remove roles from the list of allowed heroes if we hit their max
+	// Removes all heroes of a given role from the heroes that can be selected if max is reached
 	const removeMaxedRole = (cnt: number, max: number, roleHeroes: string[]) => {
 		if (cnt === max) {
 			for (let i = all.length - 1; i >= 0; --i) {
@@ -523,6 +435,106 @@ function randomize(): (Vanguard | Duelist | Strategist)[] {
 		}
 	};
 
+	// Adds a hero to the results
+	const addHero = (hero: Hero) => {
+		results.push(hero);
+
+		if (!gData.allowDuplicates && (hero == "Deadpool (Vanguard)" || hero == "Deadpool (Duelist)" || hero == "Deadpool (Strategist)")) {
+			let deadpoolPos = all.findIndex((val) => val == "Deadpool (Vanguard)");
+			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
+			deadpoolPos = all.findIndex((val) => val == "Deadpool (Duelist)");
+			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
+			deadpoolPos = all.findIndex((val) => val == "Deadpool (Strategist)");
+			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
+
+			deadpoolPos = vanguards.findIndex((val) => val == "Deadpool (Vanguard)");
+			if (deadpoolPos != -1) vanguards.splice(deadpoolPos, 1);
+			deadpoolPos = duelists.findIndex((val) => val == "Deadpool (Duelist)");
+			if (deadpoolPos != -1) duelists.splice(deadpoolPos, 1);
+			deadpoolPos = strategists.findIndex((val) => val == "Deadpool (Strategist)");
+			if (deadpoolPos != -1) strategists.splice(deadpoolPos, 1);
+		}
+		else if (!gData.allowDuplicates) {
+			all.splice(all.findIndex((val) => val == hero), 1);
+		}
+
+		if (isVanguard(hero)) {
+			if (!gData.allowDuplicates) {
+				vanguards.splice(vanguards.findIndex((val) => val == hero), 1);
+			}
+			++vanguardCnt;
+			removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
+		}
+		else if (isDuelist(hero)) {
+			if (!gData.allowDuplicates) {
+				duelists.splice(duelists.findIndex((val) => val == hero), 1);
+			}
+			++duelistCnt;
+			removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
+		}
+		else {
+			if (!gData.allowDuplicates) {
+				strategists.splice(strategists.findIndex((val) => val == hero), 1);
+			}
+			++strategistCnt;
+			removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
+		}
+	}
+
+	// add the heroes that would make a teamup with the given hero if possible
+	const addTeamupHeroes = (hero: Hero, strict: boolean) => {
+		for (const teamup of Teamups) {
+			if (!teamup.members.includes(hero)) continue;
+			if (teamup.members[0] != hero && !isHeroAllowed(teamup.members[0], strict)) continue;
+			for (const teamupHero of teamup.members) {
+				if (teamupHero == hero || !isHeroAllowed(teamupHero, strict)) continue;
+				if (Math.random() < 0.25) continue;
+				addHero(teamupHero);
+				addTeamupHeroes(teamupHero, strict);
+			}
+		}
+	}
+
+	const addMinOfRole = (role: "Vanguard" | "Duelist" | "Strategist") => {
+		while (true) {
+			let hero: Hero;
+			if (role === "Vanguard") {
+				if (vanguards.length === 0) break;
+				if (vanguardCnt >= minVanguard) break;
+				hero = vanguards[Math.floor(Math.random() * vanguards.length)];
+			}
+			else if (role === "Duelist") {
+				if (duelists.length === 0) break;
+				if (duelistCnt >= minDuelist) break;
+				hero = duelists[Math.floor(Math.random() * duelists.length)];
+			}
+			else {
+				if (strategists.length === 0) break;
+				if (strategistCnt >= minStrategist) break;
+				hero = strategists[Math.floor(Math.random() * strategists.length)];
+			}
+
+			addHero(hero);
+			if (gData.prioritizeTeamups) {
+				addTeamupHeroes(hero, true);
+			}
+		}
+	}
+
+	// Get the minimum amount of each role
+	// We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
+	const getMinOfRoles = [
+		() => { addMinOfRole("Vanguard") },
+		() => { addMinOfRole("Duelist") },
+		() => { addMinOfRole("Strategist") },
+	];
+
+	const randRoleOrder = Math.floor(Math.random() * 3);
+	for (let i = 0; i < 3; ++i) {
+		getMinOfRoles[(randRoleOrder + i) % 3]();
+	}
+
+	// Remove roles from the list of allowed heroes if we hit their max
 	removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
 	removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
 	removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
@@ -531,31 +543,9 @@ function randomize(): (Vanguard | Duelist | Strategist)[] {
 	while (results.length < teamSize && all.length > 0) {
 		const rand = Math.floor(Math.random() * all.length);
 		const hero = all[rand];
-		results.push(hero);
-
-		if (hero == "Deadpool (Vanguard)" || hero == "Deadpool (Duelist)" || hero == "Deadpool (Strategist)") {
-			let deadpoolPos = all.findIndex((val) => val == "Deadpool (Vanguard)");
-			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
-			deadpoolPos = all.findIndex((val) => val == "Deadpool (Duelist)");
-			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
-			deadpoolPos = all.findIndex((val) => val == "Deadpool (Strategist)");
-			if (deadpoolPos != -1) all.splice(deadpoolPos, 1);
-		}
-		else {
-			all.splice(rand, 1);
-		}
-
-		if (Vanguards.includes(hero as Vanguard)) {
-			++vanguardCnt;
-			removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
-		}
-		else if (Duelists.includes(hero as Duelist)) {
-			++duelistCnt;
-			removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
-		}
-		else {
-			++strategistCnt;
-			removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
+		addHero(hero);
+		if (gData.prioritizeTeamups) {
+			addTeamupHeroes(hero, false);
 		}
 	}
 

@@ -1,140 +1,134 @@
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
+// RatchetReact is a simplified React clone.
+// It is meant to have a familiar syntax but much simplified.
+// v1.0
+window.onload = function () {
+    RatchetReact.Reload();
 };
 var RatchetReact = /** @class */ (function () {
+    /**
+     * Creates a RatchetReact element out of the given HTML element.
+     * @param htmlElem Existing element to create wrapper for.
+     */
     function RatchetReact(htmlElem) {
-        this.parentElem = null;
-        this.children = [];
         this.htmlElem = htmlElem;
+        this.isOpen = false;
     }
+    /**
+     * Initializes the document with the root node
+     */
+    RatchetReact.Reload = function () {
+        if (document.body && RatchetReact.Root !== undefined) {
+            document.body.replaceChildren(RatchetReact.Root.elem());
+        }
+    };
+    RatchetReact.Get = function (id) {
+        var elem = document.getElementById(id);
+        if (elem === null)
+            return null;
+        return new RatchetReact(elem);
+    };
     /**
      * Creates a new RatchetReact element.
      * @param tagName HTML tag.
-     * @param args Attributes to set on the tag. Must be in pairs.
-     * @returns Newly created element.
+     * @returns New RatchetReact element.
      */
     RatchetReact.New = function (tagName) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var rReact = new RatchetReact(document.createElement(tagName));
-        for (var i = 0; i < args.length; i = i + 2) {
-            rReact.htmlElem.setAttribute(args[i], args[i + 1]);
-        }
-        return rReact;
+        return new RatchetReact(document.createElement(tagName));
     };
     /**
-     * Creates and appends a child element to the current element.
-     * @param tagName HTML tag of the child.
-     * @param args Attributes to set on the child tag. Must be in pairs.
-     * @returns Newly created child element.
+     * Appends a new RatchetReact element.
+     * @param elem HTML tag of element to create.
+     * @returns Newly-appended RatchetReact element.
      */
-    RatchetReact.prototype.child = function (tagName) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var child = RatchetReact.New.apply(RatchetReact, __spreadArray([tagName], args, false));
-        child.parentElem = this;
-        this.children.push(child);
-        this.htmlElem.appendChild(child.htmlElem);
-        return child;
+    RatchetReact.prototype.add = function (elem) {
+        return this.addRef(RatchetReact.New(elem));
     };
     /**
-     * Appends a child element to the current element.
-     * @param elem RatchetReact object to append.
-     * @returns Newly appended element.
+     * Appends an existing RatchetReact element.
+     * @param elem Existing RatchetReact element.
+     * @returns Newly-appended RatchetReact element.
      */
-    RatchetReact.prototype.append = function (elem) {
-        elem.parentElem = this;
-        this.children.push(elem);
-        this.htmlElem.appendChild(elem.htmlElem);
+    RatchetReact.prototype.addRef = function (elem) {
+        if (this.isOpen) {
+            this.htmlElem.appendChild(elem.htmlElem);
+        }
+        else {
+            if (this.htmlElem.parentElement === null)
+                throw this;
+            this.htmlElem.parentElement.appendChild(elem.htmlElem);
+        }
         return elem;
     };
     /**
-     * Get the element's parent.
-     * @returns Element's parent. Throws error on failure.
+     * Appends raw HTML to the underlying HTML.
+     * @param rawHtml HTML to append.
+     * @returns This RatchetReact element.
      */
-    RatchetReact.prototype.parent = function () {
-        if (this.parentElem === null)
-            throw this;
-        return this.parentElem;
+    RatchetReact.prototype.addRaw = function (rawHtml) {
+        if (this.isOpen) {
+            this.htmlElem.insertAdjacentHTML("beforeend", rawHtml);
+        }
+        else {
+            if (this.htmlElem.parentElement === null)
+                throw this;
+            this.htmlElem.insertAdjacentHTML("afterend", rawHtml);
+        }
+        return this;
     };
     /**
-     * Sets a property on the HTML element.
+     * "Opens" the RatchetReact element.
+     * Signifies that add() should append the next element as a child.
+     * @returns This RatchetReact element.
+     */
+    RatchetReact.prototype.open = function () {
+        this.isOpen = true;
+        return this;
+    };
+    /**
+     * "Closes" the RatchetReact element.
+     * @returns Parent RatchetReact element.
+     */
+    RatchetReact.prototype.close = function () {
+        if (this.isOpen) {
+            this.isOpen = false;
+            return this;
+        }
+        else {
+            if (this.htmlElem.parentElement === null)
+                throw this;
+            return new RatchetReact(this.htmlElem.parentElement);
+        }
+    };
+    /**
+     * Sets a property on the underlying HTML element.
      * @param property Property to set.
-     * @param value Value to set the property to.
-     * @returns This element.
+     * @param value Value to set property to.
+     * @returns This RatchetReact element.
      */
     RatchetReact.prototype.set = function (property, value) {
         this.htmlElem[property] = value;
         return this;
     };
     /**
-     * Gets a property from the HTML element.
-     * @param property Property to get.
-     * @returns Value of the property.
+     * Sets an attribute on the underlying HTML element.
+     * @param property Attribute to set.
+     * @param value Value to set attribute to.
+     * @returns This RatchetReact element.
+     */
+    RatchetReact.prototype.setRaw = function (property, value) {
+        this.htmlElem.setAttribute(property, value);
+        return this;
+    };
+    /**
+     * Gets a property on the underlying HTML element.
+     * @param property Property to get value of.
+     * @returns Value of property.
      */
     RatchetReact.prototype.get = function (property) {
-        return this.htmlElem[property];
+        return this.elem()[property];
     };
     /**
-     * Sets the inner HTML of this element.
-     * @param text Text to set.
-     * @returns This element.
-     */
-    RatchetReact.prototype.text = function (text) {
-        this.htmlElem.innerHTML = text;
-        return this;
-    };
-    /**
-     * Sets the reference to this element.
-     * @param ref Reference to set.
-     * @returns This element.
-     */
-    RatchetReact.prototype.ref = function (ref) {
-        ref.elem = this;
-        return this;
-    };
-    /**
-     * Removes a child element by index.
-     * @param idx Index of child to remove.
-     * @returns This element.
-     */
-    RatchetReact.prototype.removeChild = function (idx) {
-        var toRemove = this.children[idx];
-        this.children.splice(idx, 1);
-        this.htmlElem.removeChild(toRemove.htmlElem);
-        return this;
-    };
-    /**
-     * Removes all child elements.
-     * @returns This element.
-     */
-    RatchetReact.prototype.removeChildren = function () {
-        while (this.htmlElem.lastChild) {
-            this.htmlElem.removeChild(this.htmlElem.lastChild);
-        }
-        this.children = [];
-        return this;
-    };
-    /**
-     * Gets a child element by index.
-     * @param idx Index of child.
-     * @returns Child element.
-     */
-    RatchetReact.prototype.getChild = function (idx) {
-        return this.children[idx];
-    };
-    /**
-     * Gets the underlying HTML element.
+     * Get the underlying HTML element.
      * @returns HTML element.
      */
     RatchetReact.prototype.elem = function () {
@@ -142,17 +136,6 @@ var RatchetReact = /** @class */ (function () {
     };
     return RatchetReact;
 }());
-var RatchetRef = /** @class */ (function () {
-    function RatchetRef() {
-        this.elem = null;
-    }
-    RatchetRef.Use = function (tagName) {
-        return new RatchetRef();
-    };
-    return RatchetRef;
-}());
-;
-/// <reference path = "ratchetReact.ts" />
 var Vanguards = [
     "Angela",
     "Captain America",
@@ -209,6 +192,130 @@ var Strategists = [
     "Ultron",
     "White Fox",
 ];
+function isVanguard(hero) {
+    return Vanguards.includes(hero);
+}
+function isDuelist(hero) {
+    return Duelists.includes(hero);
+}
+function isStrategist(hero) {
+    return Strategists.includes(hero);
+}
+var Teamup = /** @class */ (function () {
+    function Teamup() {
+        this.name = "";
+        this.members = [];
+    }
+    return Teamup;
+}());
+var Teamups = [
+    {
+        name: "Planet X Pals",
+        members: ["Groot", "Rocket Raccoon", "Jeff the Land Shark"]
+    },
+    {
+        name: "Gamma Fastball",
+        members: ["Wolverine", "Hulk", "The Thing"]
+    },
+    {
+        name: "Stars Aligned",
+        members: ["Captain America", "Winter Soldier"]
+    },
+    {
+        name: "Stark Protocol",
+        members: ["Iron Man", "Ultron", "Squirrel Girl"]
+    },
+    {
+        name: "Symbiote Shenanigans",
+        members: ["Jeff the Land Shark", "Venom", "Hela"]
+    },
+    {
+        name: "Divine Armory",
+        members: ["Angela", "Thor"]
+    },
+    {
+        name: "Lunar Force",
+        members: ["Cloak & Dagger", "Moon Knight", "Blade"]
+    },
+    {
+        name: "Vibrant Vitality",
+        members: ["Mantis", "Groot", "Loki"]
+    },
+    {
+        name: "First Steps",
+        members: ["Human Torch", "The Thing"]
+    },
+    {
+        name: "Arcane Order",
+        members: ["Doctor Strange", "Scarlet Witch", "Magik"]
+    },
+    {
+        name: "Bestial Hunt",
+        members: ["Daredevil", "The Punisher"]
+    },
+    {
+        name: "Deep Wrath",
+        members: ["Hela", "Namor"]
+    },
+    {
+        name: "Blade of Khonshu",
+        members: ["Moon Knight", "Blade"]
+    },
+    {
+        name: "Primal Flame",
+        members: ["Phoenix", "Black Widow", "Wolverine"]
+    },
+    {
+        name: "Chilling Assault",
+        members: ["Luna Snow", "Iron Fist", "Emma Frost"]
+    },
+    {
+        name: "Sword of Duality",
+        members: ["Cloak & Dagger", "Hawkeye", "Psylocke"]
+    },
+    {
+        name: "Explosive Entanglement",
+        members: ["Gambit", "Magneto", "Rogue"]
+    },
+    {
+        name: "Parker Power-Up",
+        members: ["Peni Parker", "Spider-Man"]
+    },
+    {
+        name: "Mr Pool's Interdimensional Toy Box",
+        members: ["Deadpool (Vanguard)", "Elsa Bloodstone", "Jeff the Land Shark"]
+    },
+    {
+        name: "Mr Pool's Interdimensional Toy Box",
+        members: ["Deadpool (Duelist)", "Elsa Bloodstone", "Jeff the Land Shark"]
+    },
+    {
+        name: "Mr Pool's Interdimensional Toy Box",
+        members: ["Deadpool (Strategist)", "Elsa Bloodstone", "Jeff the Land Shark"]
+    },
+    {
+        name: "Rocket Network",
+        members: ["Rocket Raccoon", "Star-Lord", "Mister Fantastic"]
+    },
+    {
+        name: "Gamma Charge",
+        members: ["Hulk", "The Thing", "Black Panther"]
+    },
+    {
+        name: "Psionite Mayhem",
+        members: ["Invisible Woman", "Doctor Strange"]
+    },
+    {
+        name: "Cosmic Cyclone",
+        members: ["Storm", "Adam Warlock"]
+    },
+    {
+        name: "Bless of the Kumiho",
+        members: ["White Fox", "Luna Snow"]
+    },
+];
+/// <reference path = "ratchetReact.ts" />
+/// <reference path = "defs.ts" />
 var gData = {
     teamSize: NaN,
     minVanguard: NaN,
@@ -220,272 +327,266 @@ var gData = {
     selectedVanguards: {},
     selectedDuelists: {},
     selectedStrategists: {},
+    allowDuplicates: false,
+    prioritizeTeamups: false,
 };
 var gHandlers = {
     disableHeroes: (function () { }),
 };
-window.onload = function () {
-    gData.selectedDuelists[""];
-    var main = document.getElementById("main");
-    if (!main)
-        return;
-    main.appendChild(TeamSettings().elem());
-    main.appendChild(RandomizeSection().elem());
-    main.appendChild(HeroSettings().elem());
-};
+RatchetReact.Root = (RatchetReact.New("main").set("className", "container").open()
+    .add("h1").set("textContent", "Marvel Rivals Randomizer").setRaw("style", "text-align: center;")
+    .addRef(TeamSettings())
+    .addRef(RandomizeSection())
+    .addRef(HeroSettings())
+    .addRef(MiscSettings())
+    .close());
 function TeamSettings() {
-    var partySize = RatchetRef.Use("input");
-    var minVanguard = RatchetRef.Use("input");
-    var maxVanguard = RatchetRef.Use("input");
-    var minDuelist = RatchetRef.Use("input");
-    var maxDuelist = RatchetRef.Use("input");
-    var minStrategist = RatchetRef.Use("input");
-    var maxStrategist = RatchetRef.Use("input");
-    var partySizeErr = RatchetRef.Use("small");
+    var partySizeRef = RatchetReact.New("input");
+    var minVanguardRef = RatchetReact.New("input");
+    var maxVanguardRef = RatchetReact.New("input");
+    var minDuelistRef = RatchetReact.New("input");
+    var maxDuelistRef = RatchetReact.New("input");
+    var minStrategistRef = RatchetReact.New("input");
+    var maxStrategistRef = RatchetReact.New("input");
+    var partySizeErrRef = RatchetReact.New("small");
     var updateDefaultPartySize = function () {
-        if (!partySize.elem)
-            return;
-        partySize.elem.set("placeholder", getDefaultTeamSize().toString());
+        partySizeRef.set("placeholder", getDefaultTeamSize().toString());
     };
     var validatePartySize = function () {
-        var _a, _b, _c, _d;
-        if (!partySize.elem)
-            return;
-        gData.teamSize = partySize.elem.get("valueAsNumber");
+        gData.teamSize = partySizeRef.get("valueAsNumber");
         if (gData.teamSize < 1) {
-            partySize.elem.set("ariaInvalid", "true");
-            (_a = partySizeErr.elem) === null || _a === void 0 ? void 0 : _a.text("Party size must be at least 1");
+            partySizeRef.set("ariaInvalid", "true");
+            partySizeErrRef.set("textContent", "Party size must be at least 1");
         }
         else if (gData.teamSize < getMinTeamSize()) {
-            partySize.elem.set("ariaInvalid", "true");
-            (_b = partySizeErr.elem) === null || _b === void 0 ? void 0 : _b.text("The math ain't mathing. The party size must be at least " + getMinTeamSize());
+            partySizeRef.set("ariaInvalid", "true");
+            partySizeErrRef.set("textContent", "The math ain't mathing. The party size must be at least " + getMinTeamSize());
         }
-        else if (getMaxTeamSize() && gData.teamSize > getMaxTeamSize()) {
-            partySize.elem.set("ariaInvalid", "true");
-            (_c = partySizeErr.elem) === null || _c === void 0 ? void 0 : _c.text("The math ain't mathing. The party size must be at most " + getMaxTeamSize());
+        else if (gData.teamSize > getMaxTeamSize()) {
+            partySizeRef.set("ariaInvalid", "true");
+            partySizeErrRef.set("textContent", "The math ain't mathing. The party size must be at most " + getMaxTeamSize());
         }
         else {
-            partySize.elem.set("ariaInvalid", "");
-            (_d = partySizeErr.elem) === null || _d === void 0 ? void 0 : _d.text("");
+            partySizeRef.set("ariaInvalid", "");
+            partySizeErrRef.set("textContent", "");
         }
     };
     var validateMinMax = function (minRef, maxRef) {
         if (!minRef.elem || !maxRef.elem)
             return;
-        if (minRef === minVanguard) {
-            gData.minVanguard = minRef.elem.get("valueAsNumber");
-            gData.maxVanguard = maxRef.elem.get("valueAsNumber");
+        if (minRef === minVanguardRef) {
+            gData.minVanguard = minRef.get("valueAsNumber");
+            gData.maxVanguard = maxRef.get("valueAsNumber");
         }
-        else if (minRef === minDuelist) {
-            gData.minDuelist = minRef.elem.get("valueAsNumber");
-            gData.maxDuelist = maxRef.elem.get("valueAsNumber");
-        }
-        else {
-            gData.minStrategist = minRef.elem.get("valueAsNumber");
-            gData.maxStrategist = maxRef.elem.get("valueAsNumber");
-        }
-        if (minRef.elem.get("valueAsNumber") > maxRef.elem.get("valueAsNumber")) {
-            minRef.elem.set("ariaInvalid", "true");
-            maxRef.elem.set("ariaInvalid", "true");
+        else if (minRef === minDuelistRef) {
+            gData.minDuelist = minRef.get("valueAsNumber");
+            gData.maxDuelist = maxRef.get("valueAsNumber");
         }
         else {
-            minRef.elem.set("ariaInvalid", "");
-            maxRef.elem.set("ariaInvalid", "");
+            gData.minStrategist = minRef.get("valueAsNumber");
+            gData.maxStrategist = maxRef.get("valueAsNumber");
+        }
+        if (minRef.get("valueAsNumber") > maxRef.get("valueAsNumber")) {
+            minRef.set("ariaInvalid", "true");
+            maxRef.set("ariaInvalid", "true");
+        }
+        else {
+            minRef.set("ariaInvalid", "");
+            maxRef.set("ariaInvalid", "");
         }
         updateDefaultPartySize();
     };
-    return (RatchetReact.New("article")
-        .child("header", "style", "text-align: center;")
-        .child("h3").text("Team")
-        .parent()
-        .parent()
-        .child("label").text("Party Size")
-        .child("input", "type", "number", "placeholder", "1").ref(partySize).set("oninput", validatePartySize)
-        .parent()
-        .child("small").ref(partySizeErr)
-        .parent()
-        .parent()
-        .child("div", "class", "grid")
-        .child("label").text("Vanguard")
-        .child("div", "role", "group")
-        .child("input", "type", "number", "placeholder", "Min").ref(minVanguard).set("oninput", function () { return validateMinMax(minVanguard, maxVanguard); })
-        .parent()
-        .child("input", "type", "number", "placeholder", "Max").ref(maxVanguard).set("oninput", function () { return validateMinMax(minVanguard, maxVanguard); })
-        .parent()
-        .parent()
-        .parent()
-        .child("label").text("Duelist")
-        .child("div", "role", "group")
-        .child("input", "type", "number", "placeholder", "Min").ref(minDuelist).set("oninput", function () { return validateMinMax(minDuelist, maxDuelist); })
-        .parent()
-        .child("input", "type", "number", "placeholder", "Max").ref(maxDuelist).set("oninput", function () { return validateMinMax(minDuelist, maxDuelist); })
-        .parent()
-        .parent()
-        .parent()
-        .child("label").text("Strategist")
-        .child("div", "role", "group")
-        .child("input", "type", "number", "placeholder", "Min").ref(minStrategist).set("oninput", function () { return validateMinMax(minStrategist, maxStrategist); })
-        .parent()
-        .child("input", "type", "number", "placeholder", "Max").ref(maxStrategist).set("oninput", function () { return validateMinMax(minStrategist, maxStrategist); })
-        .parent()
-        .parent()
-        .parent()
-        .parent());
+    return (RatchetReact.New("article").open()
+        .add("header").setRaw("style", "text-align: center;").open()
+        .add("h3").set("textContent", "Team")
+        .close()
+        .add("label").open()
+        .addRaw("Party Size")
+        .addRef(partySizeRef).set("type", "number").set("placeholder", "1").set("oninput", validatePartySize)
+        .addRef(partySizeErrRef)
+        .close()
+        .add("div").set("className", "grid").open()
+        .add("label").set("textContent", "Vanguard").open()
+        .add("div").set("role", "group").open()
+        .addRef(minVanguardRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return validateMinMax(minVanguardRef, maxVanguardRef); })
+        .addRef(maxVanguardRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return validateMinMax(minVanguardRef, maxVanguardRef); })
+        .close()
+        .close()
+        .add("label").set("textContent", "Duelist").open()
+        .add("div").set("role", "group").open()
+        .addRef(minDuelistRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return validateMinMax(minDuelistRef, maxDuelistRef); })
+        .addRef(maxDuelistRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return validateMinMax(minDuelistRef, maxDuelistRef); })
+        .close()
+        .close()
+        .add("label").set("textContent", "Strategist").open()
+        .add("div").set("role", "group").open()
+        .addRef(minStrategistRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return validateMinMax(minStrategistRef, maxStrategistRef); })
+        .addRef(maxStrategistRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return validateMinMax(minStrategistRef, maxStrategistRef); })
+        .close()
+        .close()
+        .close()
+        .close());
 }
 function HeroSettings() {
-    var _a, _b, _c;
-    var disableVanguard = RatchetRef.Use("input");
-    var enableVanguard = RatchetRef.Use("input");
-    var disableDuelist = RatchetRef.Use("input");
-    var enableDuelist = RatchetRef.Use("input");
-    var disableStrategist = RatchetRef.Use("input");
-    var enableStrategist = RatchetRef.Use("input");
-    var vanguardList = RatchetRef.Use("fieldset");
-    var duelistList = RatchetRef.Use("fieldset");
-    var strategistList = RatchetRef.Use("fieldset");
+    var disableVanguardRef = RatchetReact.New("input");
+    var enableVanguardRef = RatchetReact.New("input");
+    var disableDuelistRef = RatchetReact.New("input");
+    var enableDuelistRef = RatchetReact.New("input");
+    var disableStrategistRef = RatchetReact.New("input");
+    var enableStrategistRef = RatchetReact.New("input");
+    var vanguardListRef = RatchetReact.New("fieldset");
+    var duelistListRef = RatchetReact.New("fieldset");
+    var strategistListRef = RatchetReact.New("fieldset");
     var onEnableAll = function (list, enable) {
-        if (!list.elem)
-            return;
-        for (var i = 0; i < list.elem.elem().childElementCount; ++i) {
-            var checkbox = list.elem.getChild(i).getChild(0);
-            checkbox.set("checked", enable);
-            checkbox.elem().onchange(new Event(""));
+        for (var _i = 0, _a = Array.from(list.get("children")); _i < _a.length; _i++) {
+            var child = _a[_i];
+            var checkbox = child.firstChild;
+            checkbox.checked = enable;
+            if (checkbox.onchange)
+                checkbox.onchange(new Event(""));
         }
     };
     gHandlers.disableHeroes = function (list) {
         var fieldset;
         for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
             var hero = list_1[_i];
-            if (Vanguards.includes(hero)) {
-                fieldset = vanguardList;
+            if (isVanguard(hero)) {
+                fieldset = vanguardListRef;
             }
-            else if (Duelists.includes(hero)) {
-                fieldset = duelistList;
+            else if (isDuelist(hero)) {
+                fieldset = duelistListRef;
             }
             else {
-                fieldset = strategistList;
+                fieldset = strategistListRef;
             }
-            if (!fieldset.elem)
-                continue;
-            for (var i = 0; i < fieldset.elem.elem().childElementCount; ++i) {
-                var checkbox = fieldset.elem.getChild(i).getChild(0);
-                if (checkbox.get("id") === hero) {
-                    checkbox.set("checked", false);
-                    checkbox.elem().onchange(new Event(""));
-                    continue;
+            for (var _a = 0, _b = Array.from(fieldset.get("children")); _a < _b.length; _a++) {
+                var child = _b[_a];
+                var checkbox = child.firstChild;
+                if (checkbox.id === hero) {
+                    checkbox.checked = false;
+                    if (checkbox.onchange)
+                        checkbox.onchange(new Event(""));
+                    break;
                 }
             }
         }
     };
-    var article = (RatchetReact.New("article")
-        .child("header", "style", "text-align: center;")
-        .child("h3").text("Heroes")
-        .parent()
-        .parent()
-        .child("div", "class", "grid")
-        .child("div")
-        .child("div", "role", "group")
-        .child("input", "type", "submit", "value", "Disable All").ref(disableVanguard).set("onclick", function () { return onEnableAll(vanguardList, false); })
-        .parent()
-        .child("input", "type", "submit", "value", "Enable All").ref(enableVanguard).set("onclick", function () { return onEnableAll(vanguardList, true); })
-        .parent()
-        .parent()
-        .child("fieldset").ref(vanguardList)
-        .parent()
-        .parent()
-        .child("div")
-        .child("div", "role", "group")
-        .child("input", "type", "submit", "value", "Disable All").ref(disableDuelist).set("onclick", function () { return onEnableAll(duelistList, false); })
-        .parent()
-        .child("input", "type", "submit", "value", "Enable All").ref(enableDuelist).set("onclick", function () { return onEnableAll(duelistList, true); })
-        .parent()
-        .parent()
-        .child("fieldset").ref(duelistList)
-        .parent()
-        .parent()
-        .child("div")
-        .child("div", "role", "group")
-        .child("input", "type", "submit", "value", "Disable All").ref(disableStrategist).set("onclick", function () { return onEnableAll(strategistList, false); })
-        .parent()
-        .child("input", "type", "submit", "value", "Enable All").ref(enableStrategist).set("onclick", function () { return onEnableAll(strategistList, true); })
-        .parent()
-        .parent()
-        .child("fieldset").ref(strategistList)
-        .parent()
-        .parent()
-        .parent());
+    vanguardListRef.open();
     for (var _i = 0, Vanguards_1 = Vanguards; _i < Vanguards_1.length; _i++) {
         var vanguard = Vanguards_1[_i];
-        (_a = vanguardList.elem) === null || _a === void 0 ? void 0 : _a.append(HeroEntry(vanguard, gData.selectedVanguards));
+        vanguardListRef.addRef(HeroEntry(vanguard, gData.selectedVanguards));
     }
-    for (var _d = 0, Duelists_1 = Duelists; _d < Duelists_1.length; _d++) {
-        var duelist = Duelists_1[_d];
-        (_b = duelistList.elem) === null || _b === void 0 ? void 0 : _b.append(HeroEntry(duelist, gData.selectedDuelists));
+    vanguardListRef.close();
+    duelistListRef.open();
+    for (var _a = 0, Duelists_1 = Duelists; _a < Duelists_1.length; _a++) {
+        var duelist = Duelists_1[_a];
+        duelistListRef.addRef(HeroEntry(duelist, gData.selectedDuelists));
     }
-    for (var _e = 0, Strategists_1 = Strategists; _e < Strategists_1.length; _e++) {
-        var strategist = Strategists_1[_e];
-        (_c = strategistList.elem) === null || _c === void 0 ? void 0 : _c.append(HeroEntry(strategist, gData.selectedStrategists));
+    duelistListRef.close();
+    strategistListRef.open();
+    for (var _b = 0, Strategists_1 = Strategists; _b < Strategists_1.length; _b++) {
+        var strategist = Strategists_1[_b];
+        strategistListRef.addRef(HeroEntry(strategist, gData.selectedStrategists));
     }
-    return article;
+    strategistListRef.close();
+    return (RatchetReact.New("article").open()
+        .add("header").setRaw("style", "text-align: center;").open()
+        .add("h3").set("textContent", "Heroes")
+        .close()
+        .add("div").set("className", "grid").open()
+        .add("div").open()
+        .add("div").set("role", "group").open()
+        .addRef(disableVanguardRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return onEnableAll(vanguardListRef, false); })
+        .addRef(enableVanguardRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return onEnableAll(vanguardListRef, true); })
+        .close()
+        .addRef(vanguardListRef)
+        .close()
+        .add("div").open()
+        .add("div").set("role", "group").open()
+        .addRef(disableDuelistRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return onEnableAll(duelistListRef, false); })
+        .addRef(enableDuelistRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return onEnableAll(duelistListRef, true); })
+        .close()
+        .addRef(duelistListRef)
+        .close()
+        .add("div").open()
+        .add("div").set("role", "group").open()
+        .addRef(disableStrategistRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return onEnableAll(strategistListRef, false); })
+        .addRef(enableStrategistRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return onEnableAll(strategistListRef, true); })
+        .close()
+        .addRef(strategistListRef)
+        .close()
+        .close()
+        .close());
 }
 function HeroEntry(hero, heroList) {
-    var checkbox = RatchetRef.Use("input");
-    var onChange = function () {
-        if (!checkbox.elem)
-            return;
-        heroList[hero] = checkbox.elem.get("checked");
-    };
-    var label = (RatchetReact.New("label")
-        .child("input", "type", "checkbox", "checked", "", "id", hero).ref(checkbox).set("onchange", onChange)
-        .parent());
-    label.elem().insertAdjacentText("beforeend", hero);
-    onChange();
-    return label;
+    var checkbox = RatchetReact.New("input");
+    heroList[hero] = true;
+    return (RatchetReact.New("label").open()
+        .addRef(checkbox).set("type", "checkbox").set("checked", true).set("id", hero).set("onchange", function () { return heroList[hero] = checkbox.get("checked"); })
+        .addRaw(hero)
+        .close());
+}
+function MiscSettings() {
+    var allowDuplicatesRef = RatchetReact.New("input");
+    var prioritizeTeamupsRef = RatchetReact.New("input");
+    return (RatchetReact.New("article").open()
+        .add("header").setRaw("style", "text-align: center;").open()
+        .add("h3").set("textContent", "Misc Settings")
+        .close()
+        .add("label").open()
+        .addRef(allowDuplicatesRef).set("type", "checkbox").set("onchange", function () { return gData.allowDuplicates = allowDuplicatesRef.get("checked"); })
+        .addRaw("Allow Duplicates")
+        .close()
+        .add("label").open()
+        .addRef(prioritizeTeamupsRef).set("type", "checkbox").set("onchange", function () { return gData.prioritizeTeamups = prioritizeTeamupsRef.get("checked"); })
+        .addRaw("Increase Odds of Teamups")
+        .close()
+        .close());
 }
 function RandomizeSection() {
-    var results = RatchetRef.Use("div");
-    var disableHeroes = RatchetRef.Use("input");
+    var resultsRef = RatchetReact.New("div");
+    var disableHeroesRef = RatchetReact.New("input");
     var res = [];
     var onRandomize = function () {
-        var _a;
-        if (!results.elem)
-            return;
         res = randomize();
         if (res.length > 0)
-            (_a = disableHeroes.elem) === null || _a === void 0 ? void 0 : _a.set("hidden", false);
-        results.elem.elem().setAttribute("style", "min-height: " + results.elem.get("offsetHeight") + "px;");
-        results.elem.removeChildren();
+            disableHeroesRef.set("hidden", false);
+        if (res.length === 1)
+            disableHeroesRef.set("value", "Disable This Hero");
+        else
+            disableHeroesRef.set("value", "Disable These Heroes");
+        resultsRef.setRaw("style", "min-height: " + resultsRef.get("offsetHeight") + "px;");
+        resultsRef.elem().replaceChildren();
+        resultsRef.open();
+        var row = resultsRef.add("div").set("className", "grid");
         var cnt = 0;
-        var row = results.elem.child("div", "class", "grid");
         for (var _i = 0, res_1 = res; _i < res_1.length; _i++) {
             var hero = res_1[_i];
-            row.child("div", "style", "text-align: center;")
-                .child("img", "src", "img/" + hero + ".png").set("onload", function () { var _a; return (_a = results.elem) === null || _a === void 0 ? void 0 : _a.elem().setAttribute("style", ""); })
-                .parent()
-                .child("h5").text(hero)
-                .parent();
+            row.open()
+                .add("div").setRaw("style", "text-align: center;").open()
+                .add("img").set("src", "img/" + hero + ".png").set("onload", function () { return resultsRef.setRaw("style", ""); })
+                .add("h5").set("textContent", hero)
+                .close()
+                .close();
             ++cnt;
             if (cnt % 6 === 0) {
-                row = results.elem.child("div", "class", "grid");
+                row = resultsRef.add("div").set("className", "grid");
             }
         }
+        resultsRef.close();
     };
     var onDisableHeroes = function () {
-        var _a;
         gHandlers.disableHeroes(res);
-        (_a = disableHeroes.elem) === null || _a === void 0 ? void 0 : _a.set("hidden", true);
+        disableHeroesRef.set("hidden", true);
     };
-    return (RatchetReact.New("article")
-        .child("header", "style", "text-align: center;")
-        .child("h3").text("Results")
-        .parent()
-        .parent()
-        .child("input", "type", "submit", "value", "Randomize").set("onclick", onRandomize)
-        .parent()
-        .child("div").ref(results)
-        .parent()
-        .child("input", "type", "submit", "value", "Disable These Heroes", "class", "secondary", "hidden", "").ref(disableHeroes).set("onclick", onDisableHeroes)
-        .parent());
+    return (RatchetReact.New("article").open()
+        .add("header").setRaw("style", "text-align: center;").open()
+        .add("h3").set("textContent", "Results")
+        .close()
+        .add("input").set("type", "submit").set("value", "Randomize").set("onclick", onRandomize)
+        .addRef(resultsRef)
+        .addRef(disableHeroesRef).set("type", "submit").set("className", "secondary").set("hidden", true).set("onclick", onDisableHeroes)
+        .close());
 }
 function getMinTeamSize() {
     var teamSize = 0;
@@ -506,17 +607,17 @@ function getMaxTeamSize() {
         teamSize += gData.maxVanguard;
     }
     else
-        return null;
+        return 1000;
     if (!Number.isNaN(gData.maxDuelist)) {
         teamSize += gData.maxDuelist;
     }
     else
-        return null;
+        return 1000;
     if (!Number.isNaN(gData.maxStrategist)) {
         teamSize += gData.maxStrategist;
     }
     else
-        return null;
+        return 1000;
     return teamSize;
 }
 function getDefaultTeamSize() {
@@ -561,91 +662,49 @@ function randomize() {
     // Build lists of allowed heroes of each role
     for (var _i = 0, _b = Object.entries(gData.selectedVanguards); _i < _b.length; _i++) {
         var _c = _b[_i], hero = _c[0], enabled = _c[1];
-        if (enabled)
+        if (enabled) {
             vanguards.push(hero);
+            all.push(hero);
+        }
     }
     for (var _d = 0, _e = Object.entries(gData.selectedDuelists); _d < _e.length; _d++) {
         var _f = _e[_d], hero = _f[0], enabled = _f[1];
-        if (enabled)
+        if (enabled) {
             duelists.push(hero);
+            all.push(hero);
+        }
     }
     for (var _g = 0, _h = Object.entries(gData.selectedStrategists); _g < _h.length; _g++) {
         var _j = _h[_g], hero = _j[0], enabled = _j[1];
-        if (enabled)
+        if (enabled) {
             strategists.push(hero);
-    }
-    var removeDeadpools = function () {
-        var deadpoolPos = vanguards.findIndex(function (val) { return val == "Deadpool (Vanguard)"; });
-        if (deadpoolPos !== -1)
-            vanguards.splice(deadpoolPos, 1);
-        deadpoolPos = duelists.findIndex(function (val) { return val == "Deadpool (Duelist)"; });
-        if (deadpoolPos !== -1)
-            duelists.splice(deadpoolPos, 1);
-        deadpoolPos = strategists.findIndex(function (val) { return val == "Deadpool (Strategist)"; });
-        if (deadpoolPos !== -1)
-            strategists.splice(deadpoolPos, 1);
-    };
-    // Get the minimum amount of each role
-    // We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
-    var getMinOfRole = [
-        function () {
-            for (var i = 0; i < minVanguard; ++i) {
-                if (vanguards.length === 0)
-                    break;
-                var rand = Math.floor(Math.random() * vanguards.length);
-                results.push(vanguards[rand]);
-                if (vanguards[rand] == "Deadpool (Vanguard)")
-                    removeDeadpools();
-                else
-                    vanguards.splice(rand, 1);
-                ++vanguardCnt;
-            }
-        },
-        function () {
-            for (var i = 0; i < minDuelist; ++i) {
-                if (duelists.length === 0)
-                    break;
-                var rand = Math.floor(Math.random() * duelists.length);
-                results.push(duelists[rand]);
-                if (duelists[rand] == "Deadpool (Duelist)")
-                    removeDeadpools();
-                else
-                    duelists.splice(rand, 1);
-                ++duelistCnt;
-            }
-        },
-        function () {
-            for (var i = 0; i < minStrategist; ++i) {
-                if (strategists.length === 0)
-                    break;
-                var rand = Math.floor(Math.random() * strategists.length);
-                results.push(strategists[rand]);
-                if (strategists[rand] == "Deadpool (Strategist)")
-                    removeDeadpools();
-                else
-                    strategists.splice(rand, 1);
-                ++strategistCnt;
-            }
+            all.push(hero);
         }
-    ];
-    var randRoleOrder = Math.floor(Math.random() * 3);
-    for (var i = 0; i < 3; ++i) {
-        getMinOfRole[(randRoleOrder + i) % 3]();
     }
-    // Build array of all allowed heroes
-    for (var _k = 0, vanguards_1 = vanguards; _k < vanguards_1.length; _k++) {
-        var hero = vanguards_1[_k];
-        all.push(hero);
-    }
-    for (var _l = 0, duelists_1 = duelists; _l < duelists_1.length; _l++) {
-        var hero = duelists_1[_l];
-        all.push(hero);
-    }
-    for (var _m = 0, strategists_1 = strategists; _m < strategists_1.length; _m++) {
-        var hero = strategists_1[_m];
-        all.push(hero);
-    }
-    // Remove roles from the list of allowed heroes if we hit their max
+    // Checks if a given hero can be selected
+    var isHeroAllowed = function (hero, strict) {
+        if (!all.includes(hero))
+            return false;
+        if (results.length == teamSize)
+            return false;
+        if (isVanguard(hero)) {
+            if (strict)
+                return vanguardCnt < minVanguard;
+            return vanguardCnt < maxVanguard;
+        }
+        if (isDuelist(hero)) {
+            if (strict)
+                return duelistCnt < minDuelist;
+            return duelistCnt < maxDuelist;
+        }
+        if (isStrategist(hero)) {
+            if (strict)
+                return strategistCnt < minStrategist;
+            return strategistCnt < maxStrategist;
+        }
+        return false;
+    };
+    // Removes all heroes of a given role from the heroes that can be selected if max is reached
     var removeMaxedRole = function (cnt, max, roleHeroes) {
         if (cnt === max) {
             for (var i = all.length - 1; i >= 0; --i) {
@@ -655,15 +714,10 @@ function randomize() {
             }
         }
     };
-    removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
-    removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
-    removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
-    // Get the rest of the results
-    while (results.length < teamSize && all.length > 0) {
-        var rand = Math.floor(Math.random() * all.length);
-        var hero = all[rand];
+    // Adds a hero to the results
+    var addHero = function (hero) {
         results.push(hero);
-        if (hero == "Deadpool (Vanguard)" || hero == "Deadpool (Duelist)" || hero == "Deadpool (Strategist)") {
+        if (!gData.allowDuplicates && (hero == "Deadpool (Vanguard)" || hero == "Deadpool (Duelist)" || hero == "Deadpool (Strategist)")) {
             var deadpoolPos = all.findIndex(function (val) { return val == "Deadpool (Vanguard)"; });
             if (deadpoolPos != -1)
                 all.splice(deadpoolPos, 1);
@@ -673,21 +727,112 @@ function randomize() {
             deadpoolPos = all.findIndex(function (val) { return val == "Deadpool (Strategist)"; });
             if (deadpoolPos != -1)
                 all.splice(deadpoolPos, 1);
+            deadpoolPos = vanguards.findIndex(function (val) { return val == "Deadpool (Vanguard)"; });
+            if (deadpoolPos != -1)
+                vanguards.splice(deadpoolPos, 1);
+            deadpoolPos = duelists.findIndex(function (val) { return val == "Deadpool (Duelist)"; });
+            if (deadpoolPos != -1)
+                duelists.splice(deadpoolPos, 1);
+            deadpoolPos = strategists.findIndex(function (val) { return val == "Deadpool (Strategist)"; });
+            if (deadpoolPos != -1)
+                strategists.splice(deadpoolPos, 1);
         }
-        else {
-            all.splice(rand, 1);
+        else if (!gData.allowDuplicates) {
+            all.splice(all.findIndex(function (val) { return val == hero; }), 1);
         }
-        if (Vanguards.includes(hero)) {
+        if (isVanguard(hero)) {
+            if (!gData.allowDuplicates) {
+                vanguards.splice(vanguards.findIndex(function (val) { return val == hero; }), 1);
+            }
             ++vanguardCnt;
             removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
         }
-        else if (Duelists.includes(hero)) {
+        else if (isDuelist(hero)) {
+            if (!gData.allowDuplicates) {
+                duelists.splice(duelists.findIndex(function (val) { return val == hero; }), 1);
+            }
             ++duelistCnt;
             removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
         }
         else {
+            if (!gData.allowDuplicates) {
+                strategists.splice(strategists.findIndex(function (val) { return val == hero; }), 1);
+            }
             ++strategistCnt;
             removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
+        }
+    };
+    // add the heroes that would make a teamup with the given hero if possible
+    var addTeamupHeroes = function (hero, strict) {
+        for (var _i = 0, Teamups_1 = Teamups; _i < Teamups_1.length; _i++) {
+            var teamup = Teamups_1[_i];
+            if (!teamup.members.includes(hero))
+                continue;
+            if (teamup.members[0] != hero && !isHeroAllowed(teamup.members[0], strict))
+                continue;
+            for (var _a = 0, _b = teamup.members; _a < _b.length; _a++) {
+                var teamupHero = _b[_a];
+                if (teamupHero == hero || !isHeroAllowed(teamupHero, strict))
+                    continue;
+                if (Math.random() < 0.25)
+                    continue;
+                addHero(teamupHero);
+                addTeamupHeroes(teamupHero, strict);
+            }
+        }
+    };
+    var addMinOfRole = function (role) {
+        while (true) {
+            var hero = void 0;
+            if (role === "Vanguard") {
+                if (vanguards.length === 0)
+                    break;
+                if (vanguardCnt >= minVanguard)
+                    break;
+                hero = vanguards[Math.floor(Math.random() * vanguards.length)];
+            }
+            else if (role === "Duelist") {
+                if (duelists.length === 0)
+                    break;
+                if (duelistCnt >= minDuelist)
+                    break;
+                hero = duelists[Math.floor(Math.random() * duelists.length)];
+            }
+            else {
+                if (strategists.length === 0)
+                    break;
+                if (strategistCnt >= minStrategist)
+                    break;
+                hero = strategists[Math.floor(Math.random() * strategists.length)];
+            }
+            addHero(hero);
+            if (gData.prioritizeTeamups) {
+                addTeamupHeroes(hero, true);
+            }
+        }
+    };
+    // Get the minimum amount of each role
+    // We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
+    var getMinOfRoles = [
+        function () { addMinOfRole("Vanguard"); },
+        function () { addMinOfRole("Duelist"); },
+        function () { addMinOfRole("Strategist"); },
+    ];
+    var randRoleOrder = Math.floor(Math.random() * 3);
+    for (var i = 0; i < 3; ++i) {
+        getMinOfRoles[(randRoleOrder + i) % 3]();
+    }
+    // Remove roles from the list of allowed heroes if we hit their max
+    removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
+    removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
+    removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
+    // Get the rest of the results
+    while (results.length < teamSize && all.length > 0) {
+        var rand = Math.floor(Math.random() * all.length);
+        var hero = all[rand];
+        addHero(hero);
+        if (gData.prioritizeTeamups) {
+            addTeamupHeroes(hero, false);
         }
     }
     // Randomize the order of the output to make it look more random

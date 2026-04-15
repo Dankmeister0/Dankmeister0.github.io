@@ -1,67 +1,122 @@
 
+// RatchetReact is a simplified React clone.
+// It is meant to have a familiar syntax but much simplified.
+// v1.0
+
+window.onload = () => {
+	RatchetReact.Reload();
+}
+
 class RatchetReact<T extends HTMLElement> {
 	private htmlElem: T;
-	private parentElem: RatchetReact<any> | null = null;
-	private children: RatchetReact<any>[] = [];
+	private isOpen: boolean;
 
-	private constructor(htmlElem: T) {
+	public static Root: RatchetReact<HTMLElement>;
+
+	/**
+	 * Initializes the document with the root node
+	 */
+	public static Reload(): void {
+		if (document.body && RatchetReact.Root !== undefined) {
+			document.body.replaceChildren(RatchetReact.Root.elem());
+		}
+	}
+
+	public static Get<T extends HTMLElement>(id: string): RatchetReact<T> | null {
+		const elem = document.getElementById(id);
+		if (elem === null) return null;
+		return new RatchetReact<T>(elem as T);
+	}
+
+	/**
+	 * Creates a RatchetReact element out of the given HTML element.
+	 * @param htmlElem Existing element to create wrapper for.
+	 */
+	public constructor(htmlElem: T) {
 		this.htmlElem = htmlElem;
+		this.isOpen = false;
 	}
 
 	/**
 	 * Creates a new RatchetReact element.
 	 * @param tagName HTML tag.
-	 * @param args Attributes to set on the tag. Must be in pairs.
-	 * @returns Newly created element.
+	 * @returns New RatchetReact element.
 	 */
-	public static New<K extends keyof HTMLElementTagNameMap>(tagName: K, ...args: string[]): RatchetReact<HTMLElementTagNameMap[K]> {
-		const rReact = new RatchetReact<HTMLElementTagNameMap[K]>(document.createElement(tagName));
-		for (let i = 0; i < args.length; i = i + 2) {
-			rReact.htmlElem.setAttribute(args[i], args[i+1]);
+	public static New<K extends keyof HTMLElementTagNameMap>(tagName: K): RatchetReact<HTMLElementTagNameMap[K]> {
+		return new RatchetReact<HTMLElementTagNameMap[K]>(document.createElement(tagName));
+	}
+
+	/**
+	 * Appends a new RatchetReact element.
+	 * @param elem HTML tag of element to create.
+	 * @returns Newly-appended RatchetReact element.
+	 */
+	public add<K extends keyof HTMLElementTagNameMap>(elem: K): RatchetReact<HTMLElementTagNameMap[K]> {
+		return this.addRef(RatchetReact.New(elem));
+	}
+
+	/**
+	 * Appends an existing RatchetReact element.
+	 * @param elem Existing RatchetReact element.
+	 * @returns Newly-appended RatchetReact element.
+	 */
+	public addRef<K extends HTMLElement>(elem: RatchetReact<K>): RatchetReact<K> {
+		if (this.isOpen) {
+			this.htmlElem.appendChild(elem.htmlElem);
 		}
-		return rReact;
-	}
-
-	/**
-	 * Creates and appends a child element to the current element.
-	 * @param tagName HTML tag of the child.
-	 * @param args Attributes to set on the child tag. Must be in pairs.
-	 * @returns Newly created child element.
-	 */
-	public child<K extends keyof HTMLElementTagNameMap>(tagName: K, ...args: string[]): RatchetReact<HTMLElementTagNameMap[K]> {
-		const child = RatchetReact.New(tagName, ...args);
-		child.parentElem = this;
-		this.children.push(child);
-		this.htmlElem.appendChild(child.htmlElem);
-		return child;
-	}
-
-	/**
-	 * Appends a child element to the current element.
-	 * @param elem RatchetReact object to append.
-	 * @returns Newly appended element.
-	 */
-	public append<K extends HTMLElement>(elem: RatchetReact<K>): RatchetReact<K> {
-		elem.parentElem = this;
-		this.children.push(elem);
-		this.htmlElem.appendChild(elem.htmlElem);
+		else {
+			if (this.htmlElem.parentElement === null) throw this;
+			this.htmlElem.parentElement.appendChild(elem.htmlElem);
+		}
 		return elem;
 	}
 
 	/**
-	 * Get the element's parent.
-	 * @returns Element's parent. Throws error on failure.
+	 * Appends raw HTML to the underlying HTML.
+	 * @param rawHtml HTML to append.
+	 * @returns This RatchetReact element.
 	 */
-	public parent<K extends HTMLElement>(): RatchetReact<K> {
-		if (this.parentElem === null) throw this;
-		return this.parentElem;
+	public addRaw(rawHtml: string): RatchetReact<T> {
+		if (this.isOpen) {
+			this.htmlElem.insertAdjacentHTML("beforeend", rawHtml);
+		}
+		else {
+			if (this.htmlElem.parentElement === null) throw this;
+			this.htmlElem.insertAdjacentHTML("afterend", rawHtml);
+		}
+		return this;
 	}
 
 	/**
-	 * Sets a property on the HTML element.
+	 * "Opens" the RatchetReact element.
+	 * Signifies that add() should append the next element as a child.
+	 * @returns This RatchetReact element.
+	 */
+	public open(): RatchetReact<T> {
+		this.isOpen = true;
+		return this;
+	}
+
+	/**
+	 * "Closes" the RatchetReact element.
+	 * @returns Parent RatchetReact element.
+	 */
+	public close(): RatchetReact<HTMLElement> {
+		if (this.isOpen) {
+			this.isOpen = false;
+			return this;
+		}
+		else {
+			if (this.htmlElem.parentElement === null) throw this;
+			return new RatchetReact<HTMLElement>(this.htmlElem.parentElement);
+		}
+	}
+
+	/**
+	 * Sets a property on the underlying HTML element.
 	 * @param property Property to set.
-	 * @param value Value to set the property to.
-	 * @returns This element.
+	 * @param value Value to set property to.
+	 * @returns This RatchetReact element.
 	 */
 	public set<K extends keyof T>(property: K, value: T[K]): RatchetReact<T> {
 		this.htmlElem[property] = value;
@@ -69,80 +124,30 @@ class RatchetReact<T extends HTMLElement> {
 	}
 
 	/**
-	 * Gets a property from the HTML element.
-	 * @param property Property to get.
-	 * @returns Value of the property.
+	 * Sets an attribute on the underlying HTML element.
+	 * @param property Attribute to set.
+	 * @param value Value to set attribute to.
+	 * @returns This RatchetReact element.
+	 */
+	public setRaw(property: string, value: string): RatchetReact<T> {
+		this.htmlElem.setAttribute(property, value);
+		return this;
+	}
+
+	/**
+	 * Gets a property on the underlying HTML element.
+	 * @param property Property to get value of.
+	 * @returns Value of property.
 	 */
 	public get<K extends keyof T>(property: K): T[K] {
-		return this.htmlElem[property];
+		return this.elem()[property];
 	}
 
 	/**
-	 * Sets the inner HTML of this element.
-	 * @param text Text to set.
-	 * @returns This element.
-	 */
-	public text(text: string): RatchetReact<T> {
-		this.htmlElem.innerHTML = text;
-		return this;
-	}
-
-	/**
-	 * Sets the reference to this element.
-	 * @param ref Reference to set.
-	 * @returns This element.
-	 */
-	public ref(ref: RatchetRef<T>): RatchetReact<T> {
-		ref.elem =this;
-		return this;
-	}
-
-	/**
-	 * Removes a child element by index.
-	 * @param idx Index of child to remove.
-	 * @returns This element.
-	 */
-	public removeChild(idx: number): RatchetReact<T> {
-		const toRemove = this.children[idx];
-		this.children.splice(idx, 1);
-		this.htmlElem.removeChild(toRemove.htmlElem);
-		return this;
-	}
-
-	/**
-	 * Removes all child elements.
-	 * @returns This element.
-	 */
-	public removeChildren(): RatchetReact<T> {
-		while (this.htmlElem.lastChild) {
-			this.htmlElem.removeChild(this.htmlElem.lastChild);
-		}
-		this.children = [];
-		return this;
-	}
-
-	/**
-	 * Gets a child element by index.
-	 * @param idx Index of child.
-	 * @returns Child element.
-	 */
-	public getChild<K extends HTMLElement>(idx: number): RatchetReact<K> {
-		return this.children[idx];
-	}
-
-	/**
-	 * Gets the underlying HTML element.
+	 * Get the underlying HTML element.
 	 * @returns HTML element.
 	 */
 	public elem(): T {
 		return this.htmlElem;
 	}
 }
-
-class RatchetRef<T extends HTMLElement> {
-	public elem: RatchetReact<T> | null = null;
-
-	public static Use<K extends keyof HTMLElementTagNameMap>(tagName: K): RatchetRef<HTMLElementTagNameMap[K]> {
-		return new RatchetRef<HTMLElementTagNameMap[K]>();
-	}
-};
