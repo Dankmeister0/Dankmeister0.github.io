@@ -15,12 +15,13 @@ const gData = {
 	selectedDuelists: {} as {[key: string]: boolean},
 	selectedStrategists: {} as {[key: string]: boolean},
 
+	disablePrevHeroes: false,
 	allowDuplicates: false,
 	prioritizeTeamups: false,
 };
 
 const gHandlers = {
-	disableHeroes: (() => {}) as (list: Array<Vanguard | Duelist | Strategist>) => void,
+	disableHeroes: (() => {}) as (list: Hero[]) => void,
 };
 
 RatchetReact.Root = (
@@ -196,21 +197,24 @@ function HeroSettings(): RatchetReact<HTMLElement> {
 				.add("h3").set("textContent", "Heroes")
 			.close()
 			.add("div").set("className", "grid").open()
-				.add("div").open()
+				.add("div").setRaw("style", "text-align: center;").open()
+					.add("img").set("src", "img/Vanguard.png").setRaw("style", "padding-bottom: 20px")
 					.add("div").set("role", "group").open()
 						.addRef(disableVanguardRef).set("type", "submit").set("value", "Disable All").set("onclick", () => onEnableAll(vanguardListRef, false))
 						.addRef(enableVanguardRef).set("type", "submit").set("value", "Enable All").set("onclick", () => onEnableAll(vanguardListRef, true))
 					.close()
 					.addRef(vanguardListRef)
 				.close()
-				.add("div").open()
+				.add("div").setRaw("style", "text-align: center;").open()
+					.add("img").set("src", "img/Duelist.png").setRaw("style", "padding-bottom: 20px")
 					.add("div").set("role", "group").open()
 						.addRef(disableDuelistRef).set("type", "submit").set("value", "Disable All").set("onclick", () => onEnableAll(duelistListRef, false))
 						.addRef(enableDuelistRef).set("type", "submit").set("value", "Enable All").set("onclick", () => onEnableAll(duelistListRef, true))
 					.close()
 					.addRef(duelistListRef)
 				.close()
-				.add("div").open()
+				.add("div").setRaw("style", "text-align: center;").open()
+					.add("img").set("src", "img/Strategist.png").setRaw("style", "padding-bottom: 20px")
 					.add("div").set("role", "group").open()
 						.addRef(disableStrategistRef).set("type", "submit").set("value", "Disable All").set("onclick", () => onEnableAll(strategistListRef, false))
 						.addRef(enableStrategistRef).set("type", "submit").set("value", "Enable All").set("onclick", () => onEnableAll(strategistListRef, true))
@@ -235,6 +239,7 @@ function HeroEntry(hero: Hero, heroList: {[key: string]: boolean}): RatchetReact
 }
 
 function MiscSettings(): RatchetReact<HTMLElement> {
+	const disablePrevHeroRef = RatchetReact.New("input");
 	const allowDuplicatesRef = RatchetReact.New("input");
 	const prioritizeTeamupsRef = RatchetReact.New("input");
 
@@ -243,13 +248,19 @@ function MiscSettings(): RatchetReact<HTMLElement> {
 			.add("header").setRaw("style", "text-align: center;").open()
 				.add("h3").set("textContent", "Misc Settings")
 			.close()
-			.add("label").open()
-				.addRef(allowDuplicatesRef).set("type", "checkbox").set("onchange", () => gData.allowDuplicates = allowDuplicatesRef.get("checked"))
-				.addRaw("Allow Duplicates")
-			.close()
-			.add("label").open()
-				.addRef(prioritizeTeamupsRef).set("type", "checkbox").set("onchange", () => gData.prioritizeTeamups = prioritizeTeamupsRef.get("checked"))
-				.addRaw("Increase Odds of Teamups")
+			.add("fieldset").open()
+				.add("label").open()
+					.addRef(disablePrevHeroRef).set("type", "checkbox").set("onchange", () => gData.disablePrevHeroes = disablePrevHeroRef.get("checked"))
+					.add("span").setRaw("data-placement", "right").set("textContent", "Disable Previous Heroes").setRaw("data-tooltip", "Disables heroes as they get rolled.")
+				.close()
+				.add("label").open()
+					.addRef(prioritizeTeamupsRef).set("type", "checkbox").set("onchange", () => gData.prioritizeTeamups = prioritizeTeamupsRef.get("checked"))
+					.add("span").setRaw("data-placement", "right").set("textContent", "Prioritize Teamups").setRaw("data-tooltip", "Increases the odds of getting teamups. This can cause heroes with lots of teamups (like Jeff) to be picked more frequently.")
+				.close()
+				.add("label").open()
+					.addRef(allowDuplicatesRef).set("type", "checkbox").set("onchange", () => gData.allowDuplicates = allowDuplicatesRef.get("checked"))
+					.add("span").setRaw("data-placement", "right").set("textContent", "Allow Duplicates").setRaw("data-tooltip", "Allows duplicate heroes to be rolled. This setting does not play well with prioritizing teamups.")
+				.close()
 			.close()
 		.close()
 	);
@@ -257,15 +268,13 @@ function MiscSettings(): RatchetReact<HTMLElement> {
 
 function RandomizeSection(): RatchetReact<HTMLElement> {
 	const resultsRef = RatchetReact.New("div");
-	const disableHeroesRef = RatchetReact.New("input");
 	let res: Hero[] = [];
 
 	const onRandomize = () => {
 		res = randomize();
-
-		if (res.length > 0) disableHeroesRef.set("hidden", false);
-		if (res.length === 1) disableHeroesRef.set("value", "Disable This Hero");
-		else disableHeroesRef.set("value", "Disable These Heroes");
+		if (gData.disablePrevHeroes) {
+			gHandlers.disableHeroes(res);
+		}
 
 		resultsRef.setRaw("style", "min-height: " + resultsRef.get("offsetHeight") + "px;");
 		resultsRef.elem().replaceChildren();
@@ -286,13 +295,38 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 				row = resultsRef.add("div").set("className", "grid")
 			}
 		}
+
+		// Create teamups section
+		const teamupAnchors = [] as boolean[];
+		const teamupMembers = [] as boolean[];
+		for (const hero of res) {
+			for (let i = 0; i < Teamups.length; ++i) {
+				if (Teamups[i].members[0] === hero) {
+					teamupAnchors[i] = true;
+				}
+				else if (Teamups[i].members.includes(hero)) {
+					teamupMembers[i] = true;
+				}
+			}
+		}
+
+		row = resultsRef.add("div").set("className", "grid").setRaw("style", "overflow-x: auto;");
+		cnt = 0;
+		for (let i = 0; i < Teamups.length; ++i) {
+			if (teamupAnchors[i] === true && teamupMembers[i] === true) {
+				const fontSize = Teamups[i].name.length > 26 ? "17" : "21";
+				row.get("style").gridTemplateColumns += " 280px"
+				row.open()
+					.add("div").setRaw("style", "min-width: 340px; position: relative;").open()
+						.add("img").set("src", "img/" + Teamups[i].name + ".png")
+						.add("p").set("textContent", Teamups[i].name).setRaw("style", "font-size: " + fontSize + "px; font-weight: bold; position: absolute; left: 21px; bottom: 0px; color: rgb(110, 135, 158);")
+					.close()
+				.close()
+			}
+		}
+
 		resultsRef.close();
 	};
-
-	const onDisableHeroes = () => {
-		gHandlers.disableHeroes(res);
-		disableHeroesRef.set("hidden", true);
-	}
 
 	return (
 		RatchetReact.New("article").open()
@@ -301,7 +335,6 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 			.close()
 			.add("input").set("type", "submit").set("value", "Randomize").set("onclick", onRandomize)
 			.addRef(resultsRef)
-			.addRef(disableHeroesRef).set("type", "submit").set("className", "secondary").set("hidden", true).set("onclick", onDisableHeroes)
 		.close()
 	);
 }

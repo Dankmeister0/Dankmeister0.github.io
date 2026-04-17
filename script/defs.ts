@@ -17,6 +17,7 @@ const Vanguards = [
 type Vanguard = typeof Vanguards[number];
 
 const Duelists = [
+	"Black Cat",
 	"Black Panther",
 	"Black Widow",
 	"Blade",
@@ -185,4 +186,8 @@ const Teamups: Teamup[] = [
 		name: "Bless of the Kumiho",
 		members: [ "White Fox", "Luna Snow" ]
 	},
+	{
+		name: "Lucky Loan",
+		members: [ "Black Cat", "Captain America", "White Fox" ]
+	}
 ]
