@@ -1,3 +1,12 @@
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 // RatchetReact is a simplified React clone.
 // It is meant to have a familiar syntax but much simplified.
 // v1.0
@@ -228,7 +237,7 @@ var Teamups = [
     },
     {
         name: "Symbiote Shenanigans",
-        members: ["Jeff the Land Shark", "Venom", "Hela"]
+        members: ["Venom", "Jeff the Land Shark", "Hela"]
     },
     {
         name: "Divine Armory",
@@ -334,10 +343,11 @@ var gData = {
     selectedStrategists: {},
     disablePrevHeroes: false,
     allowDuplicates: false,
-    prioritizeTeamups: false,
+    prioritizeTeamups: 0,
 };
 var gHandlers = {
     disableHeroes: (function () { }),
+    runSim: runSimulation,
 };
 RatchetReact.Root = (RatchetReact.New("main").set("className", "container").open()
     .add("h1").set("textContent", "Marvel Rivals Randomizer").setRaw("style", "text-align: center;")
@@ -539,22 +549,37 @@ function MiscSettings() {
     var disablePrevHeroRef = RatchetReact.New("input");
     var allowDuplicatesRef = RatchetReact.New("input");
     var prioritizeTeamupsRef = RatchetReact.New("input");
+    var prioritizeTeamupsVal = RatchetReact.New("input");
+    var updateSlider = function () {
+        gData.prioritizeTeamups = prioritizeTeamupsRef.get("valueAsNumber");
+        prioritizeTeamupsVal.set("value", gData.prioritizeTeamups.toString());
+    };
+    var updateVal = function () {
+        gData.prioritizeTeamups = Number.parseInt(prioritizeTeamupsVal.get("value"));
+        prioritizeTeamupsRef.set("value", gData.prioritizeTeamups.toString());
+    };
     return (RatchetReact.New("article").open()
         .add("header").setRaw("style", "text-align: center;").open()
         .add("h3").set("textContent", "Misc Settings")
         .close()
+        .add("div").set("className", "grid").open()
         .add("fieldset").open()
         .add("label").open()
         .addRef(disablePrevHeroRef).set("type", "checkbox").set("onchange", function () { return gData.disablePrevHeroes = disablePrevHeroRef.get("checked"); })
-        .add("span").setRaw("data-placement", "right").set("textContent", "Disable Previous Heroes").setRaw("data-tooltip", "Disables heroes as they get rolled.")
-        .close()
-        .add("label").open()
-        .addRef(prioritizeTeamupsRef).set("type", "checkbox").set("onchange", function () { return gData.prioritizeTeamups = prioritizeTeamupsRef.get("checked"); })
-        .add("span").setRaw("data-placement", "right").set("textContent", "Prioritize Teamups").setRaw("data-tooltip", "Increases the odds of getting teamups. This can cause heroes with lots of teamups (like Jeff) to be picked more frequently.")
+        .add("span").set("textContent", "Disable Previous Heroes").setRaw("data-tooltip", "Disables heroes as they get rolled.")
         .close()
         .add("label").open()
         .addRef(allowDuplicatesRef).set("type", "checkbox").set("onchange", function () { return gData.allowDuplicates = allowDuplicatesRef.get("checked"); })
-        .add("span").setRaw("data-placement", "right").set("textContent", "Allow Duplicates").setRaw("data-tooltip", "Allows duplicate heroes to be rolled. This setting does not play well with prioritizing teamups.")
+        .add("span").set("textContent", "Allow Duplicates").setRaw("data-tooltip", "Allows duplicate heroes to be rolled.")
+        .close()
+        .close()
+        .add("div").open()
+        .add("label").open()
+        .add("span").set("textContent", "Prioritize Teamups").setRaw("data-tooltip", "Increases the odds of rolling teamups. A higher value means teamups are more frequent.")
+        .addRef(prioritizeTeamupsVal).set("value", "0").setRaw("style", "width: 10%; height: 10%; margin-left: 100px; margin-bottom: 0px; padding: 5px 10px;").set("oninput", updateVal)
+        .add("br")
+        .addRef(prioritizeTeamupsRef).setRaw("style", "width: 50%").set("type", "range").set("value", "0").set("oninput", updateSlider)
+        .close()
         .close()
         .close()
         .close());
@@ -570,20 +595,20 @@ function RandomizeSection() {
         resultsRef.setRaw("style", "min-height: " + resultsRef.get("offsetHeight") + "px;");
         resultsRef.elem().replaceChildren();
         resultsRef.open();
-        var row = resultsRef.add("div").set("className", "grid");
+        var row = null;
         var cnt = 0;
         for (var _i = 0, res_1 = res; _i < res_1.length; _i++) {
             var hero = res_1[_i];
+            if (cnt % 6 === 0 || row === null) {
+                row = resultsRef.add("div").set("className", "grid");
+            }
             row.open()
                 .add("div").setRaw("style", "text-align: center;").open()
-                .add("img").set("src", "img/" + hero + ".png").set("onload", function () { return resultsRef.setRaw("style", ""); })
+                .add("img").set("src", "img/" + hero + ".png")
                 .add("h5").set("textContent", hero)
                 .close()
                 .close();
             ++cnt;
-            if (cnt % 6 === 0) {
-                row = resultsRef.add("div").set("className", "grid");
-            }
         }
         // Create teamups section
         var teamupAnchors = [];
@@ -599,8 +624,9 @@ function RandomizeSection() {
                 }
             }
         }
-        row = resultsRef.add("div").set("className", "grid").setRaw("style", "overflow-x: auto;");
         cnt = 0;
+        row = resultsRef.add("div").set("className", "grid").setRaw("style", "overflow-x: auto;");
+        row.open().add("div").close(); // Add left padding
         for (var i = 0; i < Teamups.length; ++i) {
             if (teamupAnchors[i] === true && teamupMembers[i] === true) {
                 var fontSize = Teamups[i].name.length > 26 ? "17" : "21";
@@ -611,9 +637,15 @@ function RandomizeSection() {
                     .add("p").set("textContent", Teamups[i].name).setRaw("style", "font-size: " + fontSize + "px; font-weight: bold; position: absolute; left: 21px; bottom: 0px; color: rgb(110, 135, 158);")
                     .close()
                     .close();
+                ++cnt;
             }
         }
         resultsRef.close();
+        // Calculate left padding
+        var padding = (row.get("offsetWidth") - (cnt * 280)) / 2 - 81;
+        if (padding < 0 || isNaN(padding))
+            padding = 0;
+        row.get("style").gridTemplateColumns = padding.toString() + "px " + row.get("style").gridTemplateColumns;
     };
     return (RatchetReact.New("article").open()
         .add("header").setRaw("style", "text-align: center;").open()
@@ -622,6 +654,15 @@ function RandomizeSection() {
         .add("input").set("type", "submit").set("value", "Randomize").set("onclick", onRandomize)
         .addRef(resultsRef)
         .close());
+}
+function shuffle(array) {
+    var _a;
+    var result = __spreadArray([], array, true);
+    for (var i = result.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        _a = [result[j], result[i]], result[i] = _a[0], result[j] = _a[1];
+    }
+    return result;
 }
 function getMinTeamSize() {
     var teamSize = 0;
@@ -678,7 +719,6 @@ function getDefaultTeamSize() {
     return teamSize < 1 ? 1 : teamSize;
 }
 function randomize() {
-    var _a;
     var teamSize = Number.isNaN(gData.teamSize) ? getDefaultTeamSize() : gData.teamSize;
     var minVanguard = Number.isNaN(gData.minVanguard) ? 0 : gData.minVanguard;
     var minDuelist = Number.isNaN(gData.minDuelist) ? 0 : gData.minDuelist;
@@ -695,22 +735,22 @@ function randomize() {
     var all = [];
     var results = [];
     // Build lists of allowed heroes of each role
-    for (var _i = 0, _b = Object.entries(gData.selectedVanguards); _i < _b.length; _i++) {
-        var _c = _b[_i], hero = _c[0], enabled = _c[1];
+    for (var _i = 0, _a = Object.entries(gData.selectedVanguards); _i < _a.length; _i++) {
+        var _b = _a[_i], hero = _b[0], enabled = _b[1];
         if (enabled) {
             vanguards.push(hero);
             all.push(hero);
         }
     }
-    for (var _d = 0, _e = Object.entries(gData.selectedDuelists); _d < _e.length; _d++) {
-        var _f = _e[_d], hero = _f[0], enabled = _f[1];
+    for (var _c = 0, _d = Object.entries(gData.selectedDuelists); _c < _d.length; _c++) {
+        var _e = _d[_c], hero = _e[0], enabled = _e[1];
         if (enabled) {
             duelists.push(hero);
             all.push(hero);
         }
     }
-    for (var _g = 0, _h = Object.entries(gData.selectedStrategists); _g < _h.length; _g++) {
-        var _j = _h[_g], hero = _j[0], enabled = _j[1];
+    for (var _f = 0, _g = Object.entries(gData.selectedStrategists); _f < _g.length; _f++) {
+        var _h = _g[_f], hero = _h[0], enabled = _h[1];
         if (enabled) {
             strategists.push(hero);
             all.push(hero);
@@ -799,17 +839,27 @@ function randomize() {
     };
     // add the heroes that would make a teamup with the given hero if possible
     var addTeamupHeroes = function (hero, strict) {
-        for (var _i = 0, Teamups_1 = Teamups; _i < Teamups_1.length; _i++) {
-            var teamup = Teamups_1[_i];
+        var randomizedTeamups = shuffle(Teamups);
+        for (var _i = 0, randomizedTeamups_1 = randomizedTeamups; _i < randomizedTeamups_1.length; _i++) {
+            var teamup = randomizedTeamups_1[_i];
             if (!teamup.members.includes(hero))
                 continue;
-            if (teamup.members[0] != hero && !isHeroAllowed(teamup.members[0], strict))
-                continue;
-            for (var _a = 0, _b = teamup.members; _a < _b.length; _a++) {
+            // try to add anchor first
+            var anchor = teamup.members[0];
+            if (!results.includes(anchor)) {
+                if (!isHeroAllowed(anchor, strict))
+                    continue;
+                if (Math.floor(Math.random() * 100) >= gData.prioritizeTeamups)
+                    continue;
+                addHero(anchor);
+                addTeamupHeroes(anchor, strict);
+            }
+            // try adding rest of teamup
+            for (var _a = 0, _b = shuffle(teamup.members); _a < _b.length; _a++) {
                 var teamupHero = _b[_a];
                 if (teamupHero == hero || !isHeroAllowed(teamupHero, strict))
                     continue;
-                if (Math.random() < 0.25)
+                if (Math.floor(Math.random() * 100) >= gData.prioritizeTeamups)
                     continue;
                 addHero(teamupHero);
                 addTeamupHeroes(teamupHero, strict);
@@ -841,21 +891,18 @@ function randomize() {
                 hero = strategists[Math.floor(Math.random() * strategists.length)];
             }
             addHero(hero);
-            if (gData.prioritizeTeamups) {
-                addTeamupHeroes(hero, true);
-            }
+            addTeamupHeroes(hero, true);
         }
     };
     // Get the minimum amount of each role
     // We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
-    var getMinOfRoles = [
+    var getMinOfRoles = shuffle([
         function () { addMinOfRole("Vanguard"); },
         function () { addMinOfRole("Duelist"); },
         function () { addMinOfRole("Strategist"); },
-    ];
-    var randRoleOrder = Math.floor(Math.random() * 3);
+    ]);
     for (var i = 0; i < 3; ++i) {
-        getMinOfRoles[(randRoleOrder + i) % 3]();
+        getMinOfRoles[i]();
     }
     // Remove roles from the list of allowed heroes if we hit their max
     removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
@@ -866,14 +913,39 @@ function randomize() {
         var rand = Math.floor(Math.random() * all.length);
         var hero = all[rand];
         addHero(hero);
-        if (gData.prioritizeTeamups) {
-            addTeamupHeroes(hero, false);
+        addTeamupHeroes(hero, false);
+    }
+    return shuffle(results);
+}
+function runSimulation(runs) {
+    if (runs === void 0) { runs = 1000000; }
+    var results = {};
+    for (var i = 0; i < runs; ++i) {
+        var randHeroes = randomize();
+        for (var _i = 0, randHeroes_1 = randHeroes; _i < randHeroes_1.length; _i++) {
+            var res = randHeroes_1[_i];
+            if (isNaN(results[res])) {
+                results[res] = 0;
+            }
+            results[res] += 1;
         }
     }
-    // Randomize the order of the output to make it look more random
-    for (var i = 0; i < results.length; ++i) {
-        var rand = Math.floor(Math.random() * results.length);
-        _a = [results[rand], results[i]], results[i] = _a[0], results[rand] = _a[1];
+    var totCnt = 0;
+    var resultsSorted = Object.entries(results).sort(function (a, b) { return b[1] - a[1]; });
+    for (var _a = 0, resultsSorted_1 = resultsSorted; _a < resultsSorted_1.length; _a++) {
+        var _b = resultsSorted_1[_a], hero = _b[0], cnt = _b[1];
+        totCnt += cnt;
     }
-    return results;
+    var avg = totCnt / resultsSorted.length;
+    console.log("Average: " + avg);
+    var printHeroResult = function (hero) {
+        var diff = Math.abs(results[hero] - avg);
+        var absDiff = results[hero] >= avg ? "+" + Math.round(diff) : "-" + Math.round(diff);
+        var relDiff = results[hero] >= avg ? "+" + (Math.round(diff / avg * 10000) / 100) + "%" : "-" + (Math.round(diff / avg * 10000) / 100) + "%";
+        console.log(hero + ": " + results[hero] + " (" + absDiff + " | " + relDiff + ")");
+    };
+    for (var _c = 0, resultsSorted_2 = resultsSorted; _c < resultsSorted_2.length; _c++) {
+        var hero = resultsSorted_2[_c];
+        printHeroResult(hero[0]);
+    }
 }

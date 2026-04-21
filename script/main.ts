@@ -17,11 +17,12 @@ const gData = {
 
 	disablePrevHeroes: false,
 	allowDuplicates: false,
-	prioritizeTeamups: false,
+	prioritizeTeamups: 0,
 };
 
 const gHandlers = {
 	disableHeroes: (() => {}) as (list: Hero[]) => void,
+	runSim: runSimulation,
 };
 
 RatchetReact.Root = (
@@ -242,24 +243,41 @@ function MiscSettings(): RatchetReact<HTMLElement> {
 	const disablePrevHeroRef = RatchetReact.New("input");
 	const allowDuplicatesRef = RatchetReact.New("input");
 	const prioritizeTeamupsRef = RatchetReact.New("input");
+	const prioritizeTeamupsVal = RatchetReact.New("input");
+
+	const updateSlider = () => {
+		gData.prioritizeTeamups = prioritizeTeamupsRef.get("valueAsNumber");
+		prioritizeTeamupsVal.set("value", gData.prioritizeTeamups.toString());
+	};
+
+	const updateVal = () => {
+		gData.prioritizeTeamups = Number.parseInt(prioritizeTeamupsVal.get("value"));
+		prioritizeTeamupsRef.set("value", gData.prioritizeTeamups.toString());
+	};
 
 	return (
 		RatchetReact.New("article").open()
 			.add("header").setRaw("style", "text-align: center;").open()
 				.add("h3").set("textContent", "Misc Settings")
 			.close()
-			.add("fieldset").open()
-				.add("label").open()
-					.addRef(disablePrevHeroRef).set("type", "checkbox").set("onchange", () => gData.disablePrevHeroes = disablePrevHeroRef.get("checked"))
-					.add("span").setRaw("data-placement", "right").set("textContent", "Disable Previous Heroes").setRaw("data-tooltip", "Disables heroes as they get rolled.")
+			.add("div").set("className", "grid").open()
+				.add("fieldset").open()
+					.add("label").open()
+						.addRef(disablePrevHeroRef).set("type", "checkbox").set("onchange", () => gData.disablePrevHeroes = disablePrevHeroRef.get("checked"))
+						.add("span").set("textContent", "Disable Previous Heroes").setRaw("data-tooltip", "Disables heroes as they get rolled.")
+					.close()
+					.add("label").open()
+						.addRef(allowDuplicatesRef).set("type", "checkbox").set("onchange", () => gData.allowDuplicates = allowDuplicatesRef.get("checked"))
+						.add("span").set("textContent", "Allow Duplicates").setRaw("data-tooltip", "Allows duplicate heroes to be rolled.")
+					.close()
 				.close()
-				.add("label").open()
-					.addRef(prioritizeTeamupsRef).set("type", "checkbox").set("onchange", () => gData.prioritizeTeamups = prioritizeTeamupsRef.get("checked"))
-					.add("span").setRaw("data-placement", "right").set("textContent", "Prioritize Teamups").setRaw("data-tooltip", "Increases the odds of getting teamups. This can cause heroes with lots of teamups (like Jeff) to be picked more frequently.")
-				.close()
-				.add("label").open()
-					.addRef(allowDuplicatesRef).set("type", "checkbox").set("onchange", () => gData.allowDuplicates = allowDuplicatesRef.get("checked"))
-					.add("span").setRaw("data-placement", "right").set("textContent", "Allow Duplicates").setRaw("data-tooltip", "Allows duplicate heroes to be rolled. This setting does not play well with prioritizing teamups.")
+				.add("div").open()
+					.add("label").open()
+						.add("span").set("textContent", "Prioritize Teamups").setRaw("data-tooltip", "Increases the odds of rolling teamups. A higher value means teamups are more frequent.")
+						.addRef(prioritizeTeamupsVal).set("value", "0").setRaw("style", "width: 10%; height: 10%; margin-left: 100px; margin-bottom: 0px; padding: 5px 10px;").set("oninput", updateVal)
+						.add("br")
+						.addRef(prioritizeTeamupsRef).setRaw("style", "width: 50%").set("type", "range").set("value", "0").set("oninput", updateSlider)
+					.close()
 				.close()
 			.close()
 		.close()
@@ -280,20 +298,20 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 		resultsRef.elem().replaceChildren();
 
 		resultsRef.open();
-		let row = resultsRef.add("div").set("className", "grid");
+		let row: RatchetReact<HTMLDivElement> | null = null;
 		let cnt = 0;
 		for (const hero of res) {
+			if (cnt % 6 === 0 || row === null) {
+				row = resultsRef.add("div").set("className", "grid")
+			}
+
 			row.open()
 				.add("div").setRaw("style", "text-align: center;").open()
-					.add("img").set("src", "img/" + hero + ".png").set("onload", () => resultsRef.setRaw("style", ""))
+					.add("img").set("src", "img/" + hero + ".png")
 					.add("h5").set("textContent", hero)
 				.close()
 			.close();
-
 			++cnt;
-			if (cnt % 6 === 0) {
-				row = resultsRef.add("div").set("className", "grid")
-			}
 		}
 
 		// Create teamups section
@@ -310,22 +328,28 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 			}
 		}
 
-		row = resultsRef.add("div").set("className", "grid").setRaw("style", "overflow-x: auto;");
 		cnt = 0;
+		row = resultsRef.add("div").set("className", "grid").setRaw("style", "overflow-x: auto;");
+		row.open().add("div").close(); // Add left padding
 		for (let i = 0; i < Teamups.length; ++i) {
 			if (teamupAnchors[i] === true && teamupMembers[i] === true) {
 				const fontSize = Teamups[i].name.length > 26 ? "17" : "21";
-				row.get("style").gridTemplateColumns += " 280px"
+				row.get("style").gridTemplateColumns += " 280px";
 				row.open()
 					.add("div").setRaw("style", "min-width: 340px; position: relative;").open()
 						.add("img").set("src", "img/" + Teamups[i].name + ".png")
 						.add("p").set("textContent", Teamups[i].name).setRaw("style", "font-size: " + fontSize + "px; font-weight: bold; position: absolute; left: 21px; bottom: 0px; color: rgb(110, 135, 158);")
 					.close()
-				.close()
+				.close();
+				++cnt;
 			}
 		}
-
 		resultsRef.close();
+
+		// Calculate left padding
+		let padding = (row.get("offsetWidth") - (cnt * 280)) / 2 - 81;
+		if (padding < 0 || isNaN(padding)) padding = 0;
+		row.get("style").gridTemplateColumns = padding.toString() + "px " + row.get("style").gridTemplateColumns;
 	};
 
 	return (
@@ -337,6 +361,15 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 			.addRef(resultsRef)
 		.close()
 	);
+}
+
+function shuffle<T>(array: T[]): T[] {
+	const result = [...array];
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+	return result;
 }
 
 function getMinTeamSize(): number {
@@ -516,12 +549,23 @@ function randomize(): Hero[] {
 
 	// add the heroes that would make a teamup with the given hero if possible
 	const addTeamupHeroes = (hero: Hero, strict: boolean) => {
-		for (const teamup of Teamups) {
+		const randomizedTeamups = shuffle(Teamups);
+		for (const teamup of randomizedTeamups) {
 			if (!teamup.members.includes(hero)) continue;
-			if (teamup.members[0] != hero && !isHeroAllowed(teamup.members[0], strict)) continue;
-			for (const teamupHero of teamup.members) {
+
+			// try to add anchor first
+			const anchor = teamup.members[0];
+			if (!results.includes(anchor)) {
+				if (!isHeroAllowed(anchor, strict)) continue;
+				if (Math.floor(Math.random() * 100) >= gData.prioritizeTeamups) continue;
+				addHero(anchor);
+				addTeamupHeroes(anchor, strict);
+			}
+
+			// try adding rest of teamup
+			for (const teamupHero of shuffle(teamup.members)) {
 				if (teamupHero == hero || !isHeroAllowed(teamupHero, strict)) continue;
-				if (Math.random() < 0.25) continue;
+				if (Math.floor(Math.random() * 100) >= gData.prioritizeTeamups) continue;
 				addHero(teamupHero);
 				addTeamupHeroes(teamupHero, strict);
 			}
@@ -548,23 +592,20 @@ function randomize(): Hero[] {
 			}
 
 			addHero(hero);
-			if (gData.prioritizeTeamups) {
-				addTeamupHeroes(hero, true);
-			}
+			addTeamupHeroes(hero, true);
 		}
 	}
 
 	// Get the minimum amount of each role
 	// We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
-	const getMinOfRoles = [
+	const getMinOfRoles = shuffle([
 		() => { addMinOfRole("Vanguard") },
 		() => { addMinOfRole("Duelist") },
 		() => { addMinOfRole("Strategist") },
-	];
+	]);
 
-	const randRoleOrder = Math.floor(Math.random() * 3);
 	for (let i = 0; i < 3; ++i) {
-		getMinOfRoles[(randRoleOrder + i) % 3]();
+		getMinOfRoles[i]();
 	}
 
 	// Remove roles from the list of allowed heroes if we hit their max
@@ -577,16 +618,39 @@ function randomize(): Hero[] {
 		const rand = Math.floor(Math.random() * all.length);
 		const hero = all[rand];
 		addHero(hero);
-		if (gData.prioritizeTeamups) {
-			addTeamupHeroes(hero, false);
+		addTeamupHeroes(hero, false);
+	}
+
+	return shuffle(results);
+}
+
+function runSimulation(runs: number = 1000000): void {
+	const results: {[key: string]: number} = {};
+	for(let i = 0; i < runs; ++i) {
+		const randHeroes = randomize();
+		for (const res of randHeroes) {
+			if (isNaN(results[res])) {
+				results[res] = 0;
+			}
+			results[res] += 1;
 		}
 	}
+	let totCnt = 0;
+	const resultsSorted = Object.entries(results).sort((a, b) => b[1] - a[1]);
+	for (const [hero, cnt] of resultsSorted) {
+		totCnt += cnt;
+	}
+	const avg = totCnt / resultsSorted.length;
+	console.log("Average: " + avg)
 
-	// Randomize the order of the output to make it look more random
-	for (let i = 0; i <  results.length; ++i) {
-		const rand = Math.floor(Math.random() * results.length);
-		[results[i], results[rand]] = [results[rand], results[i]];
+	const printHeroResult = (hero: string) => {
+		const diff = Math.abs(results[hero] - avg);
+		const absDiff = results[hero] >= avg ? "+" + Math.round(diff) : "-" + Math.round(diff);
+		const relDiff = results[hero] >= avg ? "+" + (Math.round(diff / avg * 10000) / 100) + "%" : "-" + (Math.round(diff / avg * 10000) / 100) + "%"
+		console.log(hero + ": " + results[hero] + " (" + absDiff + " | " + relDiff + ")")
 	}
 
-	return results;
+	for (const hero of resultsSorted) {
+		printHeroResult(hero[0]);
+	}
 }

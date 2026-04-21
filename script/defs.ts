@@ -100,7 +100,7 @@ const Teamups: Teamup[] = [
 	},
 	{
 		name: "Symbiote Shenanigans",
-		members: [ "Jeff the Land Shark", "Venom", "Hela" ]
+		members: [ "Venom", "Jeff the Land Shark", "Hela" ]
 	},
 	{
 		name: "Divine Armory",
