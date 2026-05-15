@@ -149,6 +149,7 @@ var Vanguards = [
     "Angela",
     "Captain America",
     "Deadpool (Vanguard)",
+    "Devil Dinosaur",
     "Doctor Strange",
     "Emma Frost",
     "Groot",
@@ -326,7 +327,11 @@ var Teamups = [
     {
         name: "Lucky Loan",
         members: ["Black Cat", "Captain America", "White Fox"]
-    }
+    },
+    {
+        name: "Primal Punishment",
+        members: ["Devil Dinosaur", "The Punisher"]
+    },
 ];
 /// <reference path = "ratchetReact.ts" />
 /// <reference path = "defs.ts" />
@@ -839,6 +844,8 @@ function randomize() {
     };
     // add the heroes that would make a teamup with the given hero if possible
     var addTeamupHeroes = function (hero, strict) {
+        if (gData.prioritizeTeamups == 0)
+            return;
         var randomizedTeamups = shuffle(Teamups);
         for (var _i = 0, randomizedTeamups_1 = randomizedTeamups; _i < randomizedTeamups_1.length; _i++) {
             var teamup = randomizedTeamups_1[_i];
@@ -904,10 +911,11 @@ function randomize() {
     for (var i = 0; i < 3; ++i) {
         getMinOfRoles[i]();
     }
-    // Remove roles from the list of allowed heroes if we hit their max
-    removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
-    removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
-    removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
+    // Get teamups after getting minimums
+    for (var _j = 0, results_1 = results; _j < results_1.length; _j++) {
+        var hero = results_1[_j];
+        addTeamupHeroes(hero, false);
+    }
     // Get the rest of the results
     while (results.length < teamSize && all.length > 0) {
         var rand = Math.floor(Math.random() * all.length);

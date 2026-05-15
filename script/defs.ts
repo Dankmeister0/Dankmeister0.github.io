@@ -3,6 +3,7 @@ const Vanguards = [
 	"Angela",
 	"Captain America",
 	"Deadpool (Vanguard)",
+	"Devil Dinosaur",
 	"Doctor Strange",
 	"Emma Frost",
 	"Groot",
@@ -189,5 +190,9 @@ const Teamups: Teamup[] = [
 	{
 		name: "Lucky Loan",
 		members: [ "Black Cat", "Captain America", "White Fox" ]
-	}
+	},
+	{
+		name: "Primal Punishment",
+		members: [ "Devil Dinosaur", "The Punisher" ]
+	},
 ]

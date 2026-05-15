@@ -549,6 +549,7 @@ function randomize(): Hero[] {
 
 	// add the heroes that would make a teamup with the given hero if possible
 	const addTeamupHeroes = (hero: Hero, strict: boolean) => {
+		if (gData.prioritizeTeamups == 0) return;
 		const randomizedTeamups = shuffle(Teamups);
 		for (const teamup of randomizedTeamups) {
 			if (!teamup.members.includes(hero)) continue;
@@ -608,10 +609,10 @@ function randomize(): Hero[] {
 		getMinOfRoles[i]();
 	}
 
-	// Remove roles from the list of allowed heroes if we hit their max
-	removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
-	removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
-	removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
+	// Get teamups after getting minimums
+	for (const hero of results) {
+		addTeamupHeroes(hero, false);
+	}
 
 	// Get the rest of the results
 	while (results.length < teamSize && all.length > 0) {
