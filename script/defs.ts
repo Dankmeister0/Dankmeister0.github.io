@@ -22,6 +22,7 @@ const Duelists = [
 	"Black Panther",
 	"Black Widow",
 	"Blade",
+	"Cyclops",
 	"Daredevil",
 	"Deadpool (Duelist)",
 	"Elsa Bloodstone",
@@ -137,7 +138,7 @@ const Teamups: Teamup[] = [
 	},
 	{
 		name: "Primal Flame",
-		members: [ "Phoenix", "Black Widow", "Wolverine" ]
+		members: [ "Phoenix", "Black Widow" ]
 	},
 	{
 		name: "Chilling Assault",
@@ -194,5 +195,9 @@ const Teamups: Teamup[] = [
 	{
 		name: "Primal Punishment",
 		members: [ "Devil Dinosaur", "The Punisher" ]
+	},
+	{
+		name: "Blast Slash",
+		members: [ "Cyclops", "Wolverine" ]
 	},
 ]

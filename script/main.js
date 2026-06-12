@@ -166,6 +166,7 @@ var Duelists = [
     "Black Panther",
     "Black Widow",
     "Blade",
+    "Cyclops",
     "Daredevil",
     "Deadpool (Duelist)",
     "Elsa Bloodstone",
@@ -274,7 +275,7 @@ var Teamups = [
     },
     {
         name: "Primal Flame",
-        members: ["Phoenix", "Black Widow", "Wolverine"]
+        members: ["Phoenix", "Black Widow"]
     },
     {
         name: "Chilling Assault",
@@ -331,6 +332,10 @@ var Teamups = [
     {
         name: "Primal Punishment",
         members: ["Devil Dinosaur", "The Punisher"]
+    },
+    {
+        name: "Blast Slash",
+        members: ["Cyclops", "Wolverine"]
     },
 ];
 /// <reference path = "ratchetReact.ts" />
