@@ -145,220 +145,967 @@ var RatchetReact = /** @class */ (function () {
     };
     return RatchetReact;
 }());
-var Vanguards = [
-    "Angela",
-    "Captain America",
-    "Deadpool (Vanguard)",
-    "Devil Dinosaur",
-    "Doctor Strange",
-    "Emma Frost",
-    "Groot",
-    "Hulk",
-    "Magneto",
-    "Peni Parker",
-    "Rogue",
-    "The Thing",
-    "Thor",
-    "Venom"
-];
-var Duelists = [
-    "Black Cat",
-    "Black Panther",
-    "Black Widow",
-    "Blade",
-    "Cyclops",
-    "Daredevil",
-    "Deadpool (Duelist)",
-    "Elsa Bloodstone",
-    "Hawkeye",
-    "Human Torch",
-    "Hela",
-    "Iron Fist",
-    "Iron Man",
-    "Magik",
-    "Mister Fantastic",
-    "Moon Knight",
-    "Namor",
-    "Phoenix",
-    "Psylocke",
-    "Scarlet Witch",
-    "Spider-Man",
-    "Squirrel Girl",
-    "Star-Lord",
-    "Storm",
-    "The Punisher",
-    "Winter Soldier",
-    "Wolverine",
-];
-var Strategists = [
-    "Adam Warlock",
-    "Cloak & Dagger",
-    "Deadpool (Strategist)",
-    "Gambit",
-    "Invisible Woman",
-    "Jeff the Land Shark",
-    "Loki",
-    "Luna Snow",
-    "Mantis",
-    "Rocket Raccoon",
-    "Ultron",
-    "White Fox",
-];
-function isVanguard(hero) {
-    return Vanguards.includes(hero);
-}
-function isDuelist(hero) {
-    return Duelists.includes(hero);
-}
-function isStrategist(hero) {
-    return Strategists.includes(hero);
-}
+var Hero = /** @class */ (function () {
+    function Hero() {
+        this.name = "Adam Warlock";
+        this.roles = [];
+        this.teamups = [];
+        this.disabled = false;
+        this.selected = false;
+    }
+    return Hero;
+}());
 var Teamup = /** @class */ (function () {
     function Teamup() {
         this.name = "";
-        this.members = [];
+        this.hero = "Adam Warlock";
     }
     return Teamup;
 }());
-var Teamups = [
+var Heroes = [
     {
-        name: "Planet X Pals",
-        members: ["Groot", "Rocket Raccoon", "Jeff the Land Shark"]
+        name: "Adam Warlock",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Cosmic Cyclone",
+                hero: "Storm"
+            },
+            {
+                name: "Flawless Design",
+                hero: "Ultron"
+            }
+        ]
     },
     {
-        name: "Gamma Fastball",
-        members: ["Wolverine", "Hulk", "The Thing"]
+        name: "Angela",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Asgardians of the Galaxy",
+                hero: "Star-Lord"
+            },
+            {
+                name: "Odin's Unacknowledged",
+                hero: "Loki"
+            }
+        ]
     },
     {
-        name: "Stars Aligned",
-        members: ["Captain America", "Winter Soldier"]
+        name: "Black Cat",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Feline Alliance",
+                hero: "Black Panther"
+            },
+            {
+                name: "Binding Ties",
+                hero: "Spider-Man"
+            }
+        ]
     },
     {
-        name: "Stark Protocol",
-        members: ["Iron Man", "Ultron", "Squirrel Girl"]
+        name: "Black Panther",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Damisa-Yao",
+                hero: "Storm"
+            },
+            {
+                name: "Dimensional Shortcut",
+                hero: "Magik"
+            }
+        ]
     },
     {
-        name: "Symbiote Shenanigans",
-        members: ["Venom", "Jeff the Land Shark", "Hela"]
+        name: "Black Widow",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Allied Agents",
+                hero: "Hawkeye"
+            },
+            {
+                name: "Burning Bullets",
+                hero: "Phoenix"
+            }
+        ]
     },
     {
-        name: "Divine Armory",
-        members: ["Angela", "Thor"]
+        name: "Blade",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Blade of Khonshu",
+                hero: "Moon Knight"
+            },
+            {
+                name: "Bleed for Battle",
+                hero: "Captain America"
+            }
+        ]
     },
     {
-        name: "Lunar Force",
-        members: ["Cloak & Dagger", "Moon Knight", "Blade"]
+        name: "Captain America",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Stars Aligned",
+                hero: "Winter Soldier"
+            },
+            {
+                name: "Voltaic Union",
+                hero: "Thor"
+            }
+        ]
     },
     {
-        name: "Vibrant Vitality",
-        members: ["Mantis", "Groot", "Loki"]
+        name: "Cloak & Dagger",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Oblivion Shroud",
+                hero: "The Hood"
+            },
+            {
+                name: "Frozen Haven",
+                hero: "Luna Snow"
+            }
+        ]
     },
     {
-        name: "First Steps",
-        members: ["Human Torch", "The Thing"]
+        name: "Cyclops",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Slim and Red",
+                hero: "Phoenix"
+            },
+            {
+                name: "Kinetic Kin",
+                hero: "Gambit"
+            }
+        ]
     },
     {
-        name: "Arcane Order",
-        members: ["Doctor Strange", "Scarlet Witch", "Magik"]
+        name: "Daredevil",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Comprehensive Defense",
+                hero: "Iron Fist"
+            },
+            {
+                name: "Devilish Affair",
+                hero: "Black Widow"
+            }
+        ]
     },
     {
-        name: "Bestial Hunt",
-        members: ["Daredevil", "The Punisher"]
+        name: "Deadpool",
+        roles: ["Vanguard", "Duelist", "Strategist"],
+        teamups: [
+            {
+                name: "Hel-Yeah, Honey",
+                hero: "Hela"
+            },
+            {
+                name: "Gumbo Chimichangas",
+                hero: "Gambit"
+            }
+        ]
     },
     {
-        name: "Deep Wrath",
-        members: ["Hela", "Namor"]
+        name: "Devil Dinosaur",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Primal Punishment",
+                hero: "The Punisher"
+            },
+            {
+                name: "Surf & Turf",
+                hero: "Jeff the Land Shark"
+            }
+        ]
     },
     {
-        name: "Blade of Khonshu",
-        members: ["Moon Knight", "Blade"]
+        name: "Doctor Strange",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Gamma Maelstrom",
+                hero: "Hulk"
+            },
+            {
+                name: "Psionic Vortex",
+                hero: "Invisible Woman"
+            }
+        ]
     },
     {
-        name: "Primal Flame",
-        members: ["Phoenix", "Black Widow"]
+        name: "Elsa Bloodstone",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Prehistoric Trap",
+                hero: "Devil Dinosaur"
+            },
+            {
+                name: "Loudmouth Mercs",
+                hero: "Deadpool"
+            },
+        ]
     },
     {
-        name: "Chilling Assault",
-        members: ["Luna Snow", "Iron Fist", "Emma Frost"]
+        name: "Emma Frost",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Spirit Breaker",
+                hero: "Mantis"
+            },
+            {
+                name: "Iced Out Diamond",
+                hero: "Luna Snow"
+            }
+        ]
     },
     {
-        name: "Sword of Duality",
-        members: ["Cloak & Dagger", "Hawkeye", "Psylocke"]
+        name: "Gambit",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Favorable Odds",
+                hero: "Magneto"
+            },
+            {
+                name: "Sparkling Staff",
+                hero: "Jubilee"
+            }
+        ]
     },
     {
-        name: "Explosive Entanglement",
-        members: ["Gambit", "Magneto", "Rogue"]
+        name: "Groot",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Wild Wall",
+                hero: "Mantis"
+            },
+            {
+                name: "Bubble Buddies",
+                hero: "Jeff the Land Shark"
+            }
+        ]
     },
     {
-        name: "Parker Power-Up",
-        members: ["Peni Parker", "Spider-Man"]
+        name: "Hawkeye",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Senbonzakura Strike",
+                hero: "Psylocke"
+            },
+            {
+                name: "Moonlit Slash",
+                hero: "Cloak & Dagger"
+            }
+        ]
     },
     {
-        name: "Mr Pool's Interdimensional Toy Box",
-        members: ["Deadpool (Vanguard)", "Elsa Bloodstone", "Jeff the Land Shark"]
+        name: "Hela",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Hel Tendrils",
+                hero: "Venom"
+            },
+            {
+                name: "Deep Wrath",
+                hero: "Namor"
+            }
+        ]
     },
     {
-        name: "Mr Pool's Interdimensional Toy Box",
-        members: ["Deadpool (Duelist)", "Elsa Bloodstone", "Jeff the Land Shark"]
+        name: "Hulk",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Savage Slam",
+                hero: "Captain America"
+            },
+            {
+                name: "Gamma Fastball",
+                hero: "Wolverine"
+            }
+        ]
     },
     {
-        name: "Mr Pool's Interdimensional Toy Box",
-        members: ["Deadpool (Strategist)", "Elsa Bloodstone", "Jeff the Land Shark"]
+        name: "Human Torch",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Fiery Sparks",
+                hero: "Jubilee"
+            },
+            {
+                name: "Storming Ignition",
+                hero: "Storm"
+            }
+        ]
     },
     {
-        name: "Rocket Network",
-        members: ["Rocket Raccoon", "Star-Lord", "Mister Fantastic"]
+        name: "Invisible Woman",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "United Siblings",
+                hero: "Human Torch"
+            },
+            {
+                name: "First Family",
+                hero: "Mister Fantastic"
+            }
+        ]
     },
     {
-        name: "Gamma Charge",
-        members: ["Hulk", "The Thing", "Black Panther"]
+        name: "Iron Fist",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Iron & Stone",
+                hero: "The Thing"
+            },
+            {
+                name: "Kumiho Palm",
+                hero: "White Fox"
+            }
+        ]
     },
     {
-        name: "Psionite Mayhem",
-        members: ["Invisible Woman", "Doctor Strange"]
+        name: "Iron Man",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Gamma Charge",
+                hero: "Hulk"
+            },
+            {
+                name: "Thunder Overdrive",
+                hero: "Thor"
+            }
+        ]
     },
     {
-        name: "Cosmic Cyclone",
-        members: ["Storm", "Adam Warlock"]
+        name: "Jeff the Land Shark",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Guardian of the Deep",
+                hero: "Venom"
+            },
+            {
+                name: "Mr. Pool's Interdimensional Toy Box",
+                hero: "Deadpool"
+            },
+        ]
     },
     {
-        name: "Bless of the Kumiho",
-        members: ["White Fox", "Luna Snow"]
+        name: "Jubilee",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Hellfire Sparks",
+                hero: "The Hood"
+            },
+            {
+                name: "Vampiric Kin",
+                hero: "Blade"
+            }
+        ]
     },
     {
-        name: "Lucky Loan",
-        members: ["Black Cat", "Captain America", "White Fox"]
+        name: "Loki",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Villain's Illusion",
+                hero: "Hela"
+            },
+            {
+                name: "Vibrant Vitality",
+                hero: "Mantis"
+            }
+        ]
     },
     {
-        name: "Primal Punishment",
-        members: ["Devil Dinosaur", "The Punisher"]
+        name: "Luna Snow",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Atlas Bond",
+                hero: "White Fox"
+            },
+            {
+                name: "Duality Dance",
+                hero: "Adam Warlock"
+            }
+        ]
     },
     {
-        name: "Blast Slash",
-        members: ["Cyclops", "Wolverine"]
+        name: "Magik",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Chain of Cyttorak",
+                hero: "Doctor Strange"
+            },
+            {
+                name: "Void Pentagram",
+                hero: "The Hood"
+            }
+        ]
     },
+    {
+        name: "Magneto",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Metallic Chaos",
+                hero: "Scarlet Witch"
+            },
+            {
+                name: "Magnetic Resonance",
+                hero: "Emma Frost"
+            }
+        ]
+    },
+    {
+        name: "Mantis",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Star Blossom",
+                hero: "Star-Lord"
+            },
+            {
+                name: "Vitality Pact",
+                hero: "Adam Warlock"
+            }
+        ]
+    },
+    {
+        name: "Mister Fantastic",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Fantastic Amplifier",
+                hero: "Rocket Raccoon"
+            },
+            {
+                name: "Clobberin' Research Dept.",
+                hero: "The Thing"
+            }
+        ]
+    },
+    {
+        name: "Moon Knight",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Luminous Moon",
+                hero: "Cloak & Dagger"
+            },
+            {
+                name: "Blood Moon",
+                hero: "Elsa Bloodstone"
+            }
+        ]
+    },
+    {
+        name: "Namor",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Gamma Monstro",
+                hero: "Hulk"
+            },
+            {
+                name: "Chilling Charisma",
+                hero: "Luna Snow"
+            }
+        ]
+    },
+    {
+        name: "Peni Parker",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Vibranium Mech",
+                hero: "Black Panther"
+            },
+            {
+                name: "Rocket network",
+                hero: "Rocket Raccoon"
+            }
+        ]
+    },
+    {
+        name: "Phoenix",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Circle of Life",
+                hero: "Hela"
+            },
+            {
+                name: "Telekinetic beatdown",
+                hero: "Rogue"
+            }
+        ]
+    },
+    {
+        name: "Psylocke",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Mental Projection",
+                hero: "Emma Frost"
+            },
+            {
+                name: "Light & Dark Darts",
+                hero: "Cloak & Dagger"
+            }
+        ]
+    },
+    {
+        name: "Rocket Raccoon",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Mammalian Bond",
+                hero: "Squirrel Girl"
+            },
+            {
+                name: "Planet X Pals",
+                hero: "Groot"
+            }
+        ]
+    },
+    {
+        name: "Rogue",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Mr. & Mrs. X",
+                hero: "Gambit"
+            },
+            {
+                name: "Explosive Entanglement",
+                hero: "Magneto"
+            }
+        ]
+    },
+    {
+        name: "Scarlet Witch",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Sorcerers Supreme",
+                hero: "Doctor Strange"
+            },
+            {
+                name: "Hex Fireworks",
+                hero: "Jubilee"
+            }
+        ]
+    },
+    {
+        name: "Spider-Man",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Symbiote Bond",
+                hero: "Venom"
+            },
+            {
+                name: "Parker Power-Up",
+                hero: "Peni Parker"
+            }
+        ]
+    },
+    {
+        name: "Squirrel Girl",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Squirrel Missile",
+                hero: "Iron Man"
+            },
+            {
+                name: "ESU Alumnus",
+                hero: "Spider-Man"
+            }
+        ]
+    },
+    {
+        name: "Star-Lord",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Flora Munitions",
+                hero: "Groot"
+            },
+            {
+                name: "Star-Soul",
+                hero: "Adam Warlock"
+            }
+        ]
+    },
+    {
+        name: "Storm",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "God of Thunder",
+                hero: "Thor"
+            },
+            {
+                name: "Jaws of Fate",
+                hero: "Jeff the Land Shark"
+            }
+        ]
+    },
+    {
+        name: "The Punisher",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Bestial Hunt",
+                hero: "Daredevil"
+            },
+            {
+                name: "Ammo Overload",
+                hero: "Rocket Raccoon"
+            }
+        ]
+    },
+    {
+        name: "The Thing",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Two in One",
+                hero: "Human Torch"
+            },
+            {
+                name: "Unbreakable Forces",
+                hero: "Invisible Woman"
+            }
+        ]
+    },
+    {
+        name: "Thor",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Ragnarok Rebirth",
+                hero: "Hela"
+            },
+            {
+                name: "Divine Armory",
+                hero: "Angela"
+            }
+        ]
+    },
+    {
+        name: "Ultron",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Stark Protocol",
+                hero: "Iron Man"
+            },
+            {
+                name: "SP//DR Sync",
+                hero: "Peni Parker"
+            }
+        ]
+    },
+    {
+        name: "Venom",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Blood Leech",
+                hero: "Blade"
+            },
+            {
+                name: "Abyssal Flames",
+                hero: "Phoenix"
+            }
+        ]
+    },
+    {
+        name: "White Fox",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Lucky Loan",
+                hero: "Black Cat"
+            },
+            {
+                name: "Psionic Fox",
+                hero: "Psylocke"
+            }
+        ]
+    },
+    {
+        name: "Winter Soldier",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Timeless Veterans",
+                hero: "The Punisher"
+            },
+            {
+                name: "Expert Instinct",
+                hero: "Elsa Bloodstone"
+            }
+        ]
+    },
+    {
+        name: "Wolverine",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Blast Slash",
+                hero: "Cyclops"
+            },
+            {
+                name: "Pair of Threes",
+                hero: "Gambit"
+            }
+        ]
+    }
 ];
+function getHero(name) {
+    var result = Heroes.find(function (val) { return val.name === name; });
+    return result !== null && result !== void 0 ? result : null;
+}
 /// <reference path = "ratchetReact.ts" />
 /// <reference path = "defs.ts" />
+var _a, _b;
+var HeroSelect = /** @class */ (function () {
+    function HeroSelect() {
+        this.hero = new Hero();
+        this.role = "Duelist";
+        this.teamup = new Teamup();
+    }
+    return HeroSelect;
+}());
 var gData = {
-    teamSize: NaN,
-    minVanguard: NaN,
-    maxVanguard: NaN,
-    minDuelist: NaN,
-    maxDuelist: NaN,
-    minStrategist: NaN,
-    maxStrategist: NaN,
-    selectedVanguards: {},
-    selectedDuelists: {},
-    selectedStrategists: {},
+    teamSize: 1,
+    minVanguard: 0,
+    maxVanguard: 1000,
+    minDuelist: 0,
+    maxDuelist: 1000,
+    minStrategist: 0,
+    maxStrategist: 1000,
+    minRole: (_a = {}, _a["Vanguard"] = 0, _a["Duelist"] = 0, _a["Strategist"] = 0, _a),
+    maxRole: (_b = {}, _b["Vanguard"] = 3333, _b["Duelist"] = 3333, _b["Strategist"] = 3333, _b),
+    results: [],
     disablePrevHeroes: false,
     allowDuplicates: false,
-    prioritizeTeamups: 0,
+    teamupMode: "Random",
 };
 var gHandlers = {
     disableHeroes: (function () { }),
-    runSim: runSimulation,
 };
+//#region Helpers
+function doArraysIntersect(arr1, arr2) {
+    for (var _i = 0, arr1_1 = arr1; _i < arr1_1.length; _i++) {
+        var elem = arr1_1[_i];
+        if (arr2.includes(elem)) {
+            return true;
+        }
+    }
+    return false;
+}
+function getArrayIntersection(arr1, arr2) {
+    var intersection = [];
+    for (var _i = 0, arr1_2 = arr1; _i < arr1_2.length; _i++) {
+        var elem = arr1_2[_i];
+        if (arr2.includes(elem)) {
+            intersection.push(elem);
+        }
+    }
+    return intersection;
+}
+function shuffle(array) {
+    var _a;
+    var result = __spreadArray([], array, true);
+    for (var i = result.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        _a = [result[j], result[i]], result[i] = _a[0], result[j] = _a[1];
+    }
+    return result;
+}
+function getMinTeamSize() {
+    var teamSize = 0;
+    teamSize += gData.minRole.Vanguard;
+    teamSize += gData.minRole.Duelist;
+    teamSize += gData.minRole.Strategist;
+    return teamSize < 1 ? 1 : teamSize;
+}
+function getMaxTeamSize() {
+    var teamSize = 0;
+    teamSize += gData.maxRole.Vanguard;
+    teamSize += gData.maxRole.Duelist;
+    teamSize += gData.maxRole.Strategist;
+    return teamSize;
+}
+//#endregion
+//#region Randomizer
+function getAllowedRoles() {
+    var allowedRoles = [];
+    var cntVang = 0;
+    var cntDuel = 0;
+    var cntStrat = 0;
+    for (var _i = 0, _a = gData.results; _i < _a.length; _i++) {
+        var hero = _a[_i];
+        if (hero.role === "Vanguard")
+            ++cntVang;
+        else if (hero.role === "Duelist")
+            ++cntDuel;
+        else if (hero.role === "Strategist")
+            ++cntStrat;
+    }
+    if (cntVang < gData.minRole.Vanguard)
+        allowedRoles.push("Vanguard");
+    if (cntDuel < gData.minRole.Duelist)
+        allowedRoles.push("Duelist");
+    if (cntStrat < gData.minRole.Strategist)
+        allowedRoles.push("Strategist");
+    if (allowedRoles.length > 0)
+        return allowedRoles;
+    if (cntVang < gData.maxRole.Vanguard)
+        allowedRoles.push("Vanguard");
+    if (cntDuel < gData.maxRole.Duelist)
+        allowedRoles.push("Duelist");
+    if (cntStrat < gData.maxRole.Strategist)
+        allowedRoles.push("Strategist");
+    return allowedRoles;
+}
+function getRandomFromTeamup(hero) {
+    // Check if possible teamup is already selected
+    for (var _i = 0, _a = hero.teamups; _i < _a.length; _i++) {
+        var teamup = _a[_i];
+        for (var _b = 0, _c = gData.results; _b < _c.length; _b++) {
+            var hero_1 = _c[_b];
+            if (hero_1.hero.name === teamup.hero) {
+                return teamup;
+            }
+        }
+    }
+    // Build list of allowed teamup heroes
+    var allowedHeroes = [];
+    for (var _d = 0, _e = hero.teamups; _d < _e.length; _d++) {
+        var teamup = _e[_d];
+        var hero_2 = getHero(teamup.hero);
+        if (hero_2 !== null)
+            allowedHeroes.push(hero_2);
+    }
+    // Get random hero
+    var res = getRandom(allowedHeroes);
+    if (res !== null) {
+        for (var _f = 0, _g = hero.teamups; _f < _g.length; _f++) {
+            var teamup = _g[_f];
+            if (teamup.hero === res.hero.name) {
+                return teamup;
+            }
+        }
+    }
+    return hero.teamups[Math.floor(Math.random() * hero.teamups.length)];
+}
+function getRandom(heroList) {
+    if (heroList === void 0) { heroList = Heroes; }
+    var allowedHeroes = [];
+    var allowedRoles = getAllowedRoles();
+    if (gData.teamSize <= gData.results.length)
+        return null;
+    if (allowedRoles.length === 0)
+        return null;
+    // Build list of allowed heroes
+    for (var _i = 0, heroList_1 = heroList; _i < heroList_1.length; _i++) {
+        var hero = heroList_1[_i];
+        if (!hero.disabled && !hero.selected && doArraysIntersect(hero.roles, allowedRoles)) {
+            allowedHeroes.push(hero);
+        }
+    }
+    if (allowedHeroes.length === 0)
+        return null;
+    // Get random hero
+    var output = new HeroSelect();
+    output.hero = allowedHeroes[Math.floor(Math.random() * allowedHeroes.length)];
+    // Get random role
+    var heroRoles = getArrayIntersection(output.hero.roles, allowedRoles);
+    output.role = heroRoles[Math.floor(Math.random() * heroRoles.length)];
+    // Update global data
+    gData.results.push(output);
+    if (gData.disablePrevHeroes)
+        output.hero.disabled = true;
+    if (!gData.allowDuplicates)
+        output.hero.selected = true;
+    // Get random teamup
+    if (gData.teamupMode === "Random") {
+        output.teamup = output.hero.teamups[Math.floor(Math.random() * output.hero.teamups.length)];
+    }
+    else if (gData.teamupMode === "Force") {
+        output.teamup = getRandomFromTeamup(output.hero);
+    }
+    return output;
+}
+function randomize() {
+    // Reset global data
+    gData.results.splice(0);
+    for (var _i = 0, Heroes_1 = Heroes; _i < Heroes_1.length; _i++) {
+        var hero = Heroes_1[_i];
+        hero.selected = false;
+    }
+    // Get random heroes
+    while (gData.results.length < 10000) {
+        var randomHero = getRandom(Heroes);
+        if (randomHero === null)
+            break;
+    }
+    // Get teamups of results
+    if (gData.teamupMode === "Prioritize") {
+        for (var _a = 0, _b = gData.results; _a < _b.length; _a++) {
+            var hero1 = _b[_a];
+            for (var _c = 0, _d = gData.results; _c < _d.length; _c++) {
+                var hero2 = _d[_c];
+                var teamups = shuffle(hero1.hero.teamups);
+                for (var _e = 0, teamups_1 = teamups; _e < teamups_1.length; _e++) {
+                    var teamup = teamups_1[_e];
+                    if (teamup.hero === hero2.hero.name) {
+                        hero1.teamup = teamup;
+                    }
+                }
+            }
+            if (hero1.teamup.name === "") {
+                hero1.teamup = hero1.hero.teamups[Math.floor(Math.random() * hero1.hero.teamups.length)];
+            }
+        }
+    }
+    // Shuffle for added randomness
+    gData.results = shuffle(gData.results);
+}
+//#endregion
+//#region UI
 RatchetReact.Root = (RatchetReact.New("main").set("className", "container").open()
     .add("h1").set("textContent", "Marvel Rivals Randomizer").setRaw("style", "text-align: center;")
     .addRef(TeamSettings())
@@ -374,53 +1121,102 @@ function TeamSettings() {
     var maxDuelistRef = RatchetReact.New("input");
     var minStrategistRef = RatchetReact.New("input");
     var maxStrategistRef = RatchetReact.New("input");
-    var partySizeErrRef = RatchetReact.New("small");
-    var updateDefaultPartySize = function () {
-        partySizeRef.set("placeholder", getDefaultTeamSize().toString());
-    };
-    var validatePartySize = function () {
+    var errMsgRef = RatchetReact.New("small");
+    var validateTeamSettings = function () {
+        var valid = true;
         gData.teamSize = partySizeRef.get("valueAsNumber");
+        if (isNaN(gData.teamSize)) {
+            gData.teamSize = getMinTeamSize();
+        }
         if (gData.teamSize < 1) {
             partySizeRef.set("ariaInvalid", "true");
-            partySizeErrRef.set("textContent", "Party size must be at least 1");
+            errMsgRef.set("textContent", "Party size must be at least 1");
+            valid = false;
         }
         else if (gData.teamSize < getMinTeamSize()) {
             partySizeRef.set("ariaInvalid", "true");
-            partySizeErrRef.set("textContent", "The math ain't mathing. The party size must be at least " + getMinTeamSize());
+            errMsgRef.set("textContent", "The math ain't mathing. The party size must be at least " + getMinTeamSize());
+            valid = false;
         }
         else if (gData.teamSize > getMaxTeamSize()) {
             partySizeRef.set("ariaInvalid", "true");
-            partySizeErrRef.set("textContent", "The math ain't mathing. The party size must be at most " + getMaxTeamSize());
+            errMsgRef.set("textContent", "The math ain't mathing. The party size must be at most " + getMaxTeamSize());
+            valid = false;
         }
         else {
             partySizeRef.set("ariaInvalid", "");
-            partySizeErrRef.set("textContent", "");
+        }
+        if (gData.minRole.Vanguard < 0) {
+            minVanguardRef.set("ariaInvalid", "true");
+            errMsgRef.set("textContent", "You can't have negative vanguards bro");
+            valid = false;
+        }
+        else if (gData.minRole.Vanguard > gData.maxRole.Vanguard) {
+            minVanguardRef.set("ariaInvalid", "true");
+            maxVanguardRef.set("ariaInvalid", "true");
+            errMsgRef.set("textContent", "The minimum cannot be larger than the maximum");
+            valid = false;
+        }
+        else {
+            minVanguardRef.set("ariaInvalid", "");
+            maxVanguardRef.set("ariaInvalid", "");
+        }
+        if (gData.minRole.Duelist < 0) {
+            minDuelistRef.set("ariaInvalid", "true");
+            errMsgRef.set("textContent", "You can't have negative duelists bro");
+            valid = false;
+        }
+        else if (gData.minRole.Duelist > gData.maxRole.Duelist) {
+            minDuelistRef.set("ariaInvalid", "true");
+            maxDuelistRef.set("ariaInvalid", "true");
+            errMsgRef.set("textContent", "The minimum cannot be larger than the maximum");
+            valid = false;
+        }
+        else {
+            minDuelistRef.set("ariaInvalid", "");
+            maxDuelistRef.set("ariaInvalid", "");
+        }
+        if (gData.minRole.Strategist < 0) {
+            minStrategistRef.set("ariaInvalid", "true");
+            errMsgRef.set("textContent", "You can't have negative strategists bro");
+            valid = false;
+        }
+        else if (gData.minRole.Strategist > gData.maxRole.Strategist) {
+            minStrategistRef.set("ariaInvalid", "true");
+            maxStrategistRef.set("ariaInvalid", "true");
+            errMsgRef.set("textContent", "The minimum cannot be larger than the maximum");
+            valid = false;
+        }
+        else {
+            minStrategistRef.set("ariaInvalid", "");
+            maxStrategistRef.set("ariaInvalid", "");
+        }
+        if (valid) {
+            errMsgRef.set("textContent", "");
         }
     };
-    var validateMinMax = function (minRef, maxRef) {
-        if (!minRef.elem || !maxRef.elem)
-            return;
-        if (minRef === minVanguardRef) {
-            gData.minVanguard = minRef.get("valueAsNumber");
-            gData.maxVanguard = maxRef.get("valueAsNumber");
+    var setMinMax = function (ref) {
+        var val = ref.get("valueAsNumber");
+        if (ref === minVanguardRef) {
+            gData.minRole.Vanguard = isNaN(val) ? 0 : val;
         }
-        else if (minRef === minDuelistRef) {
-            gData.minDuelist = minRef.get("valueAsNumber");
-            gData.maxDuelist = maxRef.get("valueAsNumber");
+        else if (ref === maxVanguardRef) {
+            gData.maxRole.Vanguard = isNaN(val) ? 3333 : val;
         }
-        else {
-            gData.minStrategist = minRef.get("valueAsNumber");
-            gData.maxStrategist = maxRef.get("valueAsNumber");
+        else if (ref === minDuelistRef) {
+            gData.minRole.Duelist = isNaN(val) ? 0 : val;
         }
-        if (minRef.get("valueAsNumber") > maxRef.get("valueAsNumber")) {
-            minRef.set("ariaInvalid", "true");
-            maxRef.set("ariaInvalid", "true");
+        else if (ref === maxDuelistRef) {
+            gData.maxRole.Duelist = isNaN(val) ? 3333 : val;
         }
-        else {
-            minRef.set("ariaInvalid", "");
-            maxRef.set("ariaInvalid", "");
+        else if (ref === minStrategistRef) {
+            gData.minRole.Strategist = isNaN(val) ? 0 : val;
         }
-        updateDefaultPartySize();
+        else if (ref === maxStrategistRef) {
+            gData.maxRole.Strategist = isNaN(val) ? 3333 : val;
+        }
+        validateTeamSettings();
+        partySizeRef.set("placeholder", getMinTeamSize().toString());
     };
     return (RatchetReact.New("article").open()
         .add("header").setRaw("style", "text-align: center;").open()
@@ -428,29 +1224,30 @@ function TeamSettings() {
         .close()
         .add("label").open()
         .addRaw("Party Size")
-        .addRef(partySizeRef).set("type", "number").set("placeholder", "1").set("oninput", validatePartySize)
-        .addRef(partySizeErrRef)
+        .addRef(partySizeRef).set("type", "number").set("placeholder", "1").set("oninput", validateTeamSettings)
         .close()
         .add("div").set("className", "grid").open()
         .add("label").set("textContent", "Vanguard").open()
         .add("div").set("role", "group").open()
-        .addRef(minVanguardRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return validateMinMax(minVanguardRef, maxVanguardRef); })
-        .addRef(maxVanguardRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return validateMinMax(minVanguardRef, maxVanguardRef); })
+        .addRef(minVanguardRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return setMinMax(minVanguardRef); })
+        .addRef(maxVanguardRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return setMinMax(maxVanguardRef); })
         .close()
         .close()
         .add("label").set("textContent", "Duelist").open()
         .add("div").set("role", "group").open()
-        .addRef(minDuelistRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return validateMinMax(minDuelistRef, maxDuelistRef); })
-        .addRef(maxDuelistRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return validateMinMax(minDuelistRef, maxDuelistRef); })
+        .addRef(minDuelistRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return setMinMax(minDuelistRef); })
+        .addRef(maxDuelistRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return setMinMax(maxDuelistRef); })
         .close()
         .close()
         .add("label").set("textContent", "Strategist").open()
         .add("div").set("role", "group").open()
-        .addRef(minStrategistRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return validateMinMax(minStrategistRef, maxStrategistRef); })
-        .addRef(maxStrategistRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return validateMinMax(minStrategistRef, maxStrategistRef); })
+        .addRef(minStrategistRef).set("type", "number").set("placeholder", "Min").set("oninput", function () { return setMinMax(minStrategistRef); })
+        .addRef(maxStrategistRef).set("type", "number").set("placeholder", "Max").set("oninput", function () { return setMinMax(maxStrategistRef); })
         .close()
         .close()
         .close()
+        .add("input").setRaw("style", "display: none;").set("ariaInvalid", "true")
+        .addRef(errMsgRef)
         .close());
 }
 function HeroSettings() {
@@ -463,7 +1260,7 @@ function HeroSettings() {
     var vanguardListRef = RatchetReact.New("fieldset");
     var duelistListRef = RatchetReact.New("fieldset");
     var strategistListRef = RatchetReact.New("fieldset");
-    var onEnableAll = function (list, enable) {
+    var enableAll = function (list, enable) {
         for (var _i = 0, _a = Array.from(list.get("children")); _i < _a.length; _i++) {
             var child = _a[_i];
             var checkbox = child.firstChild;
@@ -476,10 +1273,10 @@ function HeroSettings() {
         var fieldset;
         for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
             var hero = list_1[_i];
-            if (isVanguard(hero)) {
+            if (hero.role === "Vanguard") {
                 fieldset = vanguardListRef;
             }
-            else if (isDuelist(hero)) {
+            else if (hero.role === "Duelist") {
                 fieldset = duelistListRef;
             }
             else {
@@ -488,7 +1285,7 @@ function HeroSettings() {
             for (var _a = 0, _b = Array.from(fieldset.get("children")); _a < _b.length; _a++) {
                 var child = _b[_a];
                 var checkbox = child.firstChild;
-                if (checkbox.id === hero) {
+                if (checkbox.id === hero.hero.name) {
                     checkbox.checked = false;
                     if (checkbox.onchange)
                         checkbox.onchange(new Event(""));
@@ -498,22 +1295,25 @@ function HeroSettings() {
         }
     };
     vanguardListRef.open();
-    for (var _i = 0, Vanguards_1 = Vanguards; _i < Vanguards_1.length; _i++) {
-        var vanguard = Vanguards_1[_i];
-        vanguardListRef.addRef(HeroEntry(vanguard, gData.selectedVanguards));
+    duelistListRef.open();
+    strategistListRef.open();
+    for (var _i = 0, Heroes_2 = Heroes; _i < Heroes_2.length; _i++) {
+        var hero = Heroes_2[_i];
+        for (var _a = 0, _b = hero.roles; _a < _b.length; _a++) {
+            var role = _b[_a];
+            if (role === "Vanguard") {
+                vanguardListRef.addRef(HeroEntry(hero, role));
+            }
+            else if (role === "Duelist") {
+                duelistListRef.addRef(HeroEntry(hero, role));
+            }
+            else if (role === "Strategist") {
+                strategistListRef.addRef(HeroEntry(hero, role));
+            }
+        }
     }
     vanguardListRef.close();
-    duelistListRef.open();
-    for (var _a = 0, Duelists_1 = Duelists; _a < Duelists_1.length; _a++) {
-        var duelist = Duelists_1[_a];
-        duelistListRef.addRef(HeroEntry(duelist, gData.selectedDuelists));
-    }
     duelistListRef.close();
-    strategistListRef.open();
-    for (var _b = 0, Strategists_1 = Strategists; _b < Strategists_1.length; _b++) {
-        var strategist = Strategists_1[_b];
-        strategistListRef.addRef(HeroEntry(strategist, gData.selectedStrategists));
-    }
     strategistListRef.close();
     return (RatchetReact.New("article").open()
         .add("header").setRaw("style", "text-align: center;").open()
@@ -523,51 +1323,46 @@ function HeroSettings() {
         .add("div").setRaw("style", "text-align: center;").open()
         .add("img").set("src", "img/Vanguard.png").setRaw("style", "padding-bottom: 20px")
         .add("div").set("role", "group").open()
-        .addRef(disableVanguardRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return onEnableAll(vanguardListRef, false); })
-        .addRef(enableVanguardRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return onEnableAll(vanguardListRef, true); })
+        .addRef(disableVanguardRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return enableAll(vanguardListRef, false); })
+        .addRef(enableVanguardRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return enableAll(vanguardListRef, true); })
         .close()
         .addRef(vanguardListRef)
         .close()
         .add("div").setRaw("style", "text-align: center;").open()
         .add("img").set("src", "img/Duelist.png").setRaw("style", "padding-bottom: 20px")
         .add("div").set("role", "group").open()
-        .addRef(disableDuelistRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return onEnableAll(duelistListRef, false); })
-        .addRef(enableDuelistRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return onEnableAll(duelistListRef, true); })
+        .addRef(disableDuelistRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return enableAll(duelistListRef, false); })
+        .addRef(enableDuelistRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return enableAll(duelistListRef, true); })
         .close()
         .addRef(duelistListRef)
         .close()
         .add("div").setRaw("style", "text-align: center;").open()
         .add("img").set("src", "img/Strategist.png").setRaw("style", "padding-bottom: 20px")
         .add("div").set("role", "group").open()
-        .addRef(disableStrategistRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return onEnableAll(strategistListRef, false); })
-        .addRef(enableStrategistRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return onEnableAll(strategistListRef, true); })
+        .addRef(disableStrategistRef).set("type", "submit").set("value", "Disable All").set("onclick", function () { return enableAll(strategistListRef, false); })
+        .addRef(enableStrategistRef).set("type", "submit").set("value", "Enable All").set("onclick", function () { return enableAll(strategistListRef, true); })
         .close()
         .addRef(strategistListRef)
         .close()
         .close()
         .close());
 }
-function HeroEntry(hero, heroList) {
+function HeroEntry(hero, role) {
     var checkbox = RatchetReact.New("input");
-    heroList[hero] = true;
+    var heroName = hero.roles.length > 1 ? hero.name + " (" + role + ")" : hero.name;
+    hero.disabled = false;
     return (RatchetReact.New("label").open()
-        .addRef(checkbox).set("type", "checkbox").set("checked", true).set("id", hero).set("onchange", function () { return heroList[hero] = checkbox.get("checked"); })
-        .addRaw(hero)
+        .addRef(checkbox).set("type", "checkbox").set("checked", true).set("id", hero.name).set("onchange", function () { return hero.disabled = !checkbox.get("checked"); })
+        .addRaw(heroName)
         .close());
 }
 function MiscSettings() {
     var disablePrevHeroRef = RatchetReact.New("input");
     var allowDuplicatesRef = RatchetReact.New("input");
-    var prioritizeTeamupsRef = RatchetReact.New("input");
-    var prioritizeTeamupsVal = RatchetReact.New("input");
-    var updateSlider = function () {
-        gData.prioritizeTeamups = prioritizeTeamupsRef.get("valueAsNumber");
-        prioritizeTeamupsVal.set("value", gData.prioritizeTeamups.toString());
-    };
-    var updateVal = function () {
-        gData.prioritizeTeamups = Number.parseInt(prioritizeTeamupsVal.get("value"));
-        prioritizeTeamupsRef.set("value", gData.prioritizeTeamups.toString());
-    };
+    var teamupIgnoreRef = RatchetReact.New("input");
+    var teamupRandomizeRef = RatchetReact.New("input");
+    var teamupPrioritizeRef = RatchetReact.New("input");
+    var teamupForceRef = RatchetReact.New("input");
     return (RatchetReact.New("article").open()
         .add("header").setRaw("style", "text-align: center;").open()
         .add("h3").set("textContent", "Misc Settings")
@@ -583,12 +1378,29 @@ function MiscSettings() {
         .add("span").set("textContent", "Allow Duplicates").setRaw("data-tooltip", "Allows duplicate heroes to be rolled.")
         .close()
         .close()
-        .add("div").open()
+        .add("fieldset").open()
+        .add("legend").open()
+        .addRaw("Teamup Settings")
+        .close()
         .add("label").open()
-        .add("span").set("textContent", "Prioritize Teamups").setRaw("data-tooltip", "Increases the odds of rolling teamups. A higher value means teamups are more frequent.")
-        .addRef(prioritizeTeamupsVal).set("value", "0").setRaw("style", "width: 10%; height: 10%; margin-left: 100px; margin-bottom: 0px; padding: 5px 10px;").set("oninput", updateVal)
-        .add("br")
-        .addRef(prioritizeTeamupsRef).setRaw("style", "width: 50%").set("type", "range").set("value", "0").set("oninput", updateSlider)
+        .addRef(teamupIgnoreRef).set("type", "radio").set("name", "teamup").set("onchange", function () { if (teamupIgnoreRef.get("checked"))
+        gData.teamupMode = "Ignore"; })
+        .add("span").set("textContent", "Disable").setRaw("data-tooltip", "Does not select teamup")
+        .close()
+        .add("label").open()
+        .addRef(teamupRandomizeRef).set("type", "radio").set("name", "teamup").set("checked", true).set("onchange", function () { if (teamupRandomizeRef.get("checked"))
+        gData.teamupMode = "Random"; })
+        .add("span").set("textContent", "Randomize").setRaw("data-tooltip", "Selects random teamup")
+        .close()
+        .add("label").open()
+        .addRef(teamupPrioritizeRef).set("type", "radio").set("name", "teamup").set("onchange", function () { if (teamupPrioritizeRef.get("checked"))
+        gData.teamupMode = "Prioritize"; })
+        .add("span").set("textContent", "Prioritize").setRaw("data-tooltip", "Prioritizes upgraded teamups")
+        .close()
+        .add("label").open()
+        .addRef(teamupForceRef).set("type", "radio").set("name", "teamup").set("onchange", function () { if (teamupForceRef.get("checked"))
+        gData.teamupMode = "Force"; })
+        .add("span").set("textContent", "Force").setRaw("data-tooltip", "Forces team to have upgraded teamups (This can skew characters that have more teamups to show up more often)")
         .close()
         .close()
         .close()
@@ -596,66 +1408,47 @@ function MiscSettings() {
 }
 function RandomizeSection() {
     var resultsRef = RatchetReact.New("div");
-    var res = [];
     var onRandomize = function () {
-        res = randomize();
-        if (gData.disablePrevHeroes) {
-            gHandlers.disableHeroes(res);
-        }
+        randomize();
+        if (gData.disablePrevHeroes)
+            gHandlers.disableHeroes(gData.results);
         resultsRef.setRaw("style", "min-height: " + resultsRef.get("offsetHeight") + "px;");
         resultsRef.elem().replaceChildren();
         resultsRef.open();
         var row = null;
         var cnt = 0;
-        for (var _i = 0, res_1 = res; _i < res_1.length; _i++) {
-            var hero = res_1[_i];
+        for (var _i = 0, _a = gData.results; _i < _a.length; _i++) {
+            var hero = _a[_i];
             if (cnt % 6 === 0 || row === null) {
                 row = resultsRef.add("div").set("className", "grid");
             }
+            var heroName = hero.hero.roles.length > 1 ? hero.hero.name + " (" + hero.role + ")" : hero.hero.name;
+            var h5Ref = RatchetReact.New("h5");
             row.open()
                 .add("div").setRaw("style", "text-align: center;").open()
-                .add("img").set("src", "img/" + hero + ".png")
-                .add("h5").set("textContent", hero)
+                .add("img").set("src", "img/hero/" + heroName + ".png")
+                .addRef(h5Ref).set("textContent", heroName)
                 .close()
                 .close();
+            if (gData.teamupMode !== "Ignore") {
+                var boosted = false;
+                for (var _b = 0, _c = gData.results; _b < _c.length; _b++) {
+                    var hero2 = _c[_b];
+                    if (hero2.hero.name === hero.teamup.hero) {
+                        boosted = true;
+                        break;
+                    }
+                }
+                var filename = "img/ability/" + hero.teamup.name.replace("//", "^^") + ".png";
+                var divRef = RatchetReact.New("div");
+                h5Ref.add("img").set("src", filename)
+                    .addRef(divRef).set("textContent", hero.teamup.name);
+                if (boosted) {
+                    divRef.setRaw("style", "border-bottom: none; font-weight: bold;").setRaw("data-placement", "bottom").setRaw("data-tooltip", "Boosted by " + hero.teamup.hero);
+                }
+            }
             ++cnt;
         }
-        // Create teamups section
-        var teamupAnchors = [];
-        var teamupMembers = [];
-        for (var _a = 0, res_2 = res; _a < res_2.length; _a++) {
-            var hero = res_2[_a];
-            for (var i = 0; i < Teamups.length; ++i) {
-                if (Teamups[i].members[0] === hero) {
-                    teamupAnchors[i] = true;
-                }
-                else if (Teamups[i].members.includes(hero)) {
-                    teamupMembers[i] = true;
-                }
-            }
-        }
-        cnt = 0;
-        row = resultsRef.add("div").set("className", "grid").setRaw("style", "overflow-x: auto;");
-        row.open().add("div").close(); // Add left padding
-        for (var i = 0; i < Teamups.length; ++i) {
-            if (teamupAnchors[i] === true && teamupMembers[i] === true) {
-                var fontSize = Teamups[i].name.length > 26 ? "17" : "21";
-                row.get("style").gridTemplateColumns += " 280px";
-                row.open()
-                    .add("div").setRaw("style", "min-width: 340px; position: relative;").open()
-                    .add("img").set("src", "img/" + Teamups[i].name + ".png")
-                    .add("p").set("textContent", Teamups[i].name).setRaw("style", "font-size: " + fontSize + "px; font-weight: bold; position: absolute; left: 21px; bottom: 0px; color: rgb(110, 135, 158);")
-                    .close()
-                    .close();
-                ++cnt;
-            }
-        }
-        resultsRef.close();
-        // Calculate left padding
-        var padding = (row.get("offsetWidth") - (cnt * 280)) / 2 - 81;
-        if (padding < 0 || isNaN(padding))
-            padding = 0;
-        row.get("style").gridTemplateColumns = padding.toString() + "px " + row.get("style").gridTemplateColumns;
     };
     return (RatchetReact.New("article").open()
         .add("header").setRaw("style", "text-align: center;").open()
@@ -665,288 +1458,42 @@ function RandomizeSection() {
         .addRef(resultsRef)
         .close());
 }
-function shuffle(array) {
-    var _a;
-    var result = __spreadArray([], array, true);
-    for (var i = result.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        _a = [result[j], result[i]], result[i] = _a[0], result[j] = _a[1];
-    }
-    return result;
-}
-function getMinTeamSize() {
-    var teamSize = 0;
-    if (!Number.isNaN(gData.minVanguard)) {
-        teamSize += gData.minVanguard;
-    }
-    if (!Number.isNaN(gData.minDuelist)) {
-        teamSize += gData.minDuelist;
-    }
-    if (!Number.isNaN(gData.minStrategist)) {
-        teamSize += gData.minStrategist;
-    }
-    return teamSize < 1 ? 1 : teamSize;
-}
-function getMaxTeamSize() {
-    var teamSize = 0;
-    if (!Number.isNaN(gData.maxVanguard)) {
-        teamSize += gData.maxVanguard;
-    }
-    else
-        return 1000;
-    if (!Number.isNaN(gData.maxDuelist)) {
-        teamSize += gData.maxDuelist;
-    }
-    else
-        return 1000;
-    if (!Number.isNaN(gData.maxStrategist)) {
-        teamSize += gData.maxStrategist;
-    }
-    else
-        return 1000;
-    return teamSize;
-}
-function getDefaultTeamSize() {
-    var teamSize = 0;
-    if (!Number.isNaN(gData.minVanguard)) {
-        teamSize += gData.minVanguard;
-    }
-    else if (!Number.isNaN(gData.maxVanguard)) {
-        teamSize += gData.maxVanguard;
-    }
-    if (!Number.isNaN(gData.minDuelist)) {
-        teamSize += gData.minDuelist;
-    }
-    else if (!Number.isNaN(gData.maxDuelist)) {
-        teamSize += gData.maxDuelist;
-    }
-    if (!Number.isNaN(gData.minStrategist)) {
-        teamSize += gData.minStrategist;
-    }
-    else if (!Number.isNaN(gData.maxStrategist)) {
-        teamSize += gData.maxStrategist;
-    }
-    return teamSize < 1 ? 1 : teamSize;
-}
-function randomize() {
-    var teamSize = Number.isNaN(gData.teamSize) ? getDefaultTeamSize() : gData.teamSize;
-    var minVanguard = Number.isNaN(gData.minVanguard) ? 0 : gData.minVanguard;
-    var minDuelist = Number.isNaN(gData.minDuelist) ? 0 : gData.minDuelist;
-    var minStrategist = Number.isNaN(gData.minStrategist) ? 0 : gData.minStrategist;
-    var maxVanguard = Number.isNaN(gData.maxVanguard) ? 1000 : gData.maxVanguard;
-    var maxDuelist = Number.isNaN(gData.maxDuelist) ? 1000 : gData.maxDuelist;
-    var maxStrategist = Number.isNaN(gData.maxStrategist) ? 1000 : gData.maxStrategist;
-    var vanguardCnt = 0;
-    var duelistCnt = 0;
-    var strategistCnt = 0;
-    var vanguards = [];
-    var duelists = [];
-    var strategists = [];
-    var all = [];
-    var results = [];
-    // Build lists of allowed heroes of each role
-    for (var _i = 0, _a = Object.entries(gData.selectedVanguards); _i < _a.length; _i++) {
-        var _b = _a[_i], hero = _b[0], enabled = _b[1];
-        if (enabled) {
-            vanguards.push(hero);
-            all.push(hero);
-        }
-    }
-    for (var _c = 0, _d = Object.entries(gData.selectedDuelists); _c < _d.length; _c++) {
-        var _e = _d[_c], hero = _e[0], enabled = _e[1];
-        if (enabled) {
-            duelists.push(hero);
-            all.push(hero);
-        }
-    }
-    for (var _f = 0, _g = Object.entries(gData.selectedStrategists); _f < _g.length; _f++) {
-        var _h = _g[_f], hero = _h[0], enabled = _h[1];
-        if (enabled) {
-            strategists.push(hero);
-            all.push(hero);
-        }
-    }
-    // Checks if a given hero can be selected
-    var isHeroAllowed = function (hero, strict) {
-        if (!all.includes(hero))
-            return false;
-        if (results.length == teamSize)
-            return false;
-        if (isVanguard(hero)) {
-            if (strict)
-                return vanguardCnt < minVanguard;
-            return vanguardCnt < maxVanguard;
-        }
-        if (isDuelist(hero)) {
-            if (strict)
-                return duelistCnt < minDuelist;
-            return duelistCnt < maxDuelist;
-        }
-        if (isStrategist(hero)) {
-            if (strict)
-                return strategistCnt < minStrategist;
-            return strategistCnt < maxStrategist;
-        }
-        return false;
-    };
-    // Removes all heroes of a given role from the heroes that can be selected if max is reached
-    var removeMaxedRole = function (cnt, max, roleHeroes) {
-        if (cnt === max) {
-            for (var i = all.length - 1; i >= 0; --i) {
-                if (roleHeroes.includes(all[i])) {
-                    all.splice(i, 1);
-                }
-            }
-        }
-    };
-    // Adds a hero to the results
-    var addHero = function (hero) {
-        results.push(hero);
-        if (!gData.allowDuplicates && (hero == "Deadpool (Vanguard)" || hero == "Deadpool (Duelist)" || hero == "Deadpool (Strategist)")) {
-            var deadpoolPos = all.findIndex(function (val) { return val == "Deadpool (Vanguard)"; });
-            if (deadpoolPos != -1)
-                all.splice(deadpoolPos, 1);
-            deadpoolPos = all.findIndex(function (val) { return val == "Deadpool (Duelist)"; });
-            if (deadpoolPos != -1)
-                all.splice(deadpoolPos, 1);
-            deadpoolPos = all.findIndex(function (val) { return val == "Deadpool (Strategist)"; });
-            if (deadpoolPos != -1)
-                all.splice(deadpoolPos, 1);
-            deadpoolPos = vanguards.findIndex(function (val) { return val == "Deadpool (Vanguard)"; });
-            if (deadpoolPos != -1)
-                vanguards.splice(deadpoolPos, 1);
-            deadpoolPos = duelists.findIndex(function (val) { return val == "Deadpool (Duelist)"; });
-            if (deadpoolPos != -1)
-                duelists.splice(deadpoolPos, 1);
-            deadpoolPos = strategists.findIndex(function (val) { return val == "Deadpool (Strategist)"; });
-            if (deadpoolPos != -1)
-                strategists.splice(deadpoolPos, 1);
-        }
-        else if (!gData.allowDuplicates) {
-            all.splice(all.findIndex(function (val) { return val == hero; }), 1);
-        }
-        if (isVanguard(hero)) {
-            if (!gData.allowDuplicates) {
-                vanguards.splice(vanguards.findIndex(function (val) { return val == hero; }), 1);
-            }
-            ++vanguardCnt;
-            removeMaxedRole(vanguardCnt, maxVanguard, Vanguards.slice());
-        }
-        else if (isDuelist(hero)) {
-            if (!gData.allowDuplicates) {
-                duelists.splice(duelists.findIndex(function (val) { return val == hero; }), 1);
-            }
-            ++duelistCnt;
-            removeMaxedRole(duelistCnt, maxDuelist, Duelists.slice());
-        }
-        else {
-            if (!gData.allowDuplicates) {
-                strategists.splice(strategists.findIndex(function (val) { return val == hero; }), 1);
-            }
-            ++strategistCnt;
-            removeMaxedRole(strategistCnt, maxStrategist, Strategists.slice());
-        }
-    };
-    // add the heroes that would make a teamup with the given hero if possible
-    var addTeamupHeroes = function (hero, strict) {
-        if (gData.prioritizeTeamups == 0)
-            return;
-        var randomizedTeamups = shuffle(Teamups);
-        for (var _i = 0, randomizedTeamups_1 = randomizedTeamups; _i < randomizedTeamups_1.length; _i++) {
-            var teamup = randomizedTeamups_1[_i];
-            if (!teamup.members.includes(hero))
-                continue;
-            // try to add anchor first
-            var anchor = teamup.members[0];
-            if (!results.includes(anchor)) {
-                if (!isHeroAllowed(anchor, strict))
-                    continue;
-                if (Math.floor(Math.random() * 100) >= gData.prioritizeTeamups)
-                    continue;
-                addHero(anchor);
-                addTeamupHeroes(anchor, strict);
-            }
-            // try adding rest of teamup
-            for (var _a = 0, _b = shuffle(teamup.members); _a < _b.length; _a++) {
-                var teamupHero = _b[_a];
-                if (teamupHero == hero || !isHeroAllowed(teamupHero, strict))
-                    continue;
-                if (Math.floor(Math.random() * 100) >= gData.prioritizeTeamups)
-                    continue;
-                addHero(teamupHero);
-                addTeamupHeroes(teamupHero, strict);
-            }
-        }
-    };
-    var addMinOfRole = function (role) {
-        while (true) {
-            var hero = void 0;
-            if (role === "Vanguard") {
-                if (vanguards.length === 0)
-                    break;
-                if (vanguardCnt >= minVanguard)
-                    break;
-                hero = vanguards[Math.floor(Math.random() * vanguards.length)];
-            }
-            else if (role === "Duelist") {
-                if (duelists.length === 0)
-                    break;
-                if (duelistCnt >= minDuelist)
-                    break;
-                hero = duelists[Math.floor(Math.random() * duelists.length)];
-            }
-            else {
-                if (strategists.length === 0)
-                    break;
-                if (strategistCnt >= minStrategist)
-                    break;
-                hero = strategists[Math.floor(Math.random() * strategists.length)];
-            }
-            addHero(hero);
-            addTeamupHeroes(hero, true);
-        }
-    };
-    // Get the minimum amount of each role
-    // We need to randomize the order of this, otherwise deadpool would be most likely to show up on the first role we check
-    var getMinOfRoles = shuffle([
-        function () { addMinOfRole("Vanguard"); },
-        function () { addMinOfRole("Duelist"); },
-        function () { addMinOfRole("Strategist"); },
-    ]);
-    for (var i = 0; i < 3; ++i) {
-        getMinOfRoles[i]();
-    }
-    // Get teamups after getting minimums
-    for (var _j = 0, results_1 = results; _j < results_1.length; _j++) {
-        var hero = results_1[_j];
-        addTeamupHeroes(hero, false);
-    }
-    // Get the rest of the results
-    while (results.length < teamSize && all.length > 0) {
-        var rand = Math.floor(Math.random() * all.length);
-        var hero = all[rand];
-        addHero(hero);
-        addTeamupHeroes(hero, false);
-    }
-    return shuffle(results);
-}
+//#endregion
 function runSimulation(runs) {
     if (runs === void 0) { runs = 1000000; }
     var results = {};
+    var resultsTeamups = [];
     for (var i = 0; i < runs; ++i) {
-        var randHeroes = randomize();
-        for (var _i = 0, randHeroes_1 = randHeroes; _i < randHeroes_1.length; _i++) {
-            var res = randHeroes_1[_i];
-            if (isNaN(results[res])) {
-                results[res] = 0;
+        randomize();
+        // Count heroes
+        var boostedTeamups = 0;
+        for (var _i = 0, _a = gData.results; _i < _a.length; _i++) {
+            var hero = _a[_i];
+            var heroName = hero.hero.roles.length > 1 ? hero.hero.name + " (" + hero.role + ")" : hero.hero.name;
+            if (isNaN(results[heroName])) {
+                results[heroName] = 0;
             }
-            results[res] += 1;
+            results[heroName] += 1;
+            // Count teamups
+            for (var _b = 0, _c = gData.results; _b < _c.length; _b++) {
+                var hero2 = _c[_b];
+                if (hero2.hero.name === hero.teamup.hero) {
+                    ++boostedTeamups;
+                    break;
+                }
+            }
+        }
+        if (resultsTeamups[boostedTeamups] === undefined) {
+            resultsTeamups[boostedTeamups] = 1;
+        }
+        else {
+            resultsTeamups[boostedTeamups] += 1;
         }
     }
     var totCnt = 0;
     var resultsSorted = Object.entries(results).sort(function (a, b) { return b[1] - a[1]; });
-    for (var _a = 0, resultsSorted_1 = resultsSorted; _a < resultsSorted_1.length; _a++) {
-        var _b = resultsSorted_1[_a], hero = _b[0], cnt = _b[1];
+    for (var _d = 0, resultsSorted_1 = resultsSorted; _d < resultsSorted_1.length; _d++) {
+        var _e = resultsSorted_1[_d], hero = _e[0], cnt = _e[1];
         totCnt += cnt;
     }
     var avg = totCnt / resultsSorted.length;
@@ -957,8 +1504,18 @@ function runSimulation(runs) {
         var relDiff = results[hero] >= avg ? "+" + (Math.round(diff / avg * 10000) / 100) + "%" : "-" + (Math.round(diff / avg * 10000) / 100) + "%";
         console.log(hero + ": " + results[hero] + " (" + absDiff + " | " + relDiff + ")");
     };
-    for (var _c = 0, resultsSorted_2 = resultsSorted; _c < resultsSorted_2.length; _c++) {
-        var hero = resultsSorted_2[_c];
+    for (var _f = 0, resultsSorted_2 = resultsSorted; _f < resultsSorted_2.length; _f++) {
+        var hero = resultsSorted_2[_f];
         printHeroResult(hero[0]);
     }
+    console.log("Teamups frequency:");
+    var teamupAvg = 0;
+    for (var i = 0; i < resultsTeamups.length; ++i) {
+        if (resultsTeamups[i] === undefined)
+            continue;
+        teamupAvg += (i * resultsTeamups[i]);
+        console.log(i + ": " + resultsTeamups[i]);
+    }
+    teamupAvg /= runs;
+    console.log("Average: " + teamupAvg);
 }

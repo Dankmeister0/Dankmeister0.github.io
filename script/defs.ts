@@ -1,203 +1,806 @@
 
-const Vanguards = [
-	"Angela",
-	"Captain America",
-	"Deadpool (Vanguard)",
-	"Devil Dinosaur",
-	"Doctor Strange",
-	"Emma Frost",
-	"Groot",
-	"Hulk",
-	"Magneto",
-	"Peni Parker",
-	"Rogue",
-	"The Thing",
-	"Thor",
-	"Venom"
-] as const;
-type Vanguard = typeof Vanguards[number];
+type Role = "Vanguard" | "Duelist" | "Strategist";
 
-const Duelists = [
-	"Black Cat",
-	"Black Panther",
-	"Black Widow",
-	"Blade",
-	"Cyclops",
-	"Daredevil",
-	"Deadpool (Duelist)",
-	"Elsa Bloodstone",
-	"Hawkeye",
-	"Human Torch",
-	"Hela",
-	"Iron Fist",
-	"Iron Man",
-	"Magik",
-	"Mister Fantastic",
-	"Moon Knight",
-	"Namor",
-	"Phoenix",
-	"Psylocke",
-	"Scarlet Witch",
-	"Spider-Man",
-	"Squirrel Girl",
-	"Star-Lord",
-	"Storm",
-	"The Punisher",
-	"Winter Soldier",
-	"Wolverine",
-] as const;
-type Duelist = typeof Duelists[number];
+type HeroName =
+	"Adam Warlock" |
+	"Angela" |
+	"Black Cat" |
+	"Black Panther" |
+	"Black Widow" |
+	"Blade" |
+	"Captain America" |
+	"Cloak & Dagger" |
+	"Cyclops" |
+	"Daredevil" |
+	"Deadpool" |
+	"Devil Dinosaur" |
+	"Doctor Strange" |
+	"Elsa Bloodstone" |
+	"Emma Frost" |
+	"Gambit" |
+	"Groot" |
+	"Hawkeye" |
+	"Hela" |
+	"Hulk" |
+	"Human Torch" |
+	"Invisible Woman" |
+	"Iron Fist" |
+	"Iron Man" |
+	"Jeff the Land Shark" |
+	"Jubilee" |
+	"Loki" |
+	"Luna Snow" |
+	"Magik" |
+	"Magneto" |
+	"Mantis" |
+	"Mister Fantastic" |
+	"Moon Knight" |
+	"Namor" |
+	"Peni Parker" |
+	"Phoenix" |
+	"Psylocke" |
+	"Rocket Raccoon" |
+	"Rogue" |
+	"Scarlet Witch" |
+	"Spider-Man" |
+	"Squirrel Girl" |
+	"Star-Lord" |
+	"Storm" |
+	"The Hood" |
+	"The Punisher" |
+	"The Thing" |
+	"Thor" |
+	"Ultron" |
+	"Venom" |
+	"White Fox" |
+	"Winter Soldier" |
+	"Wolverine";
 
-const Strategists = [
-	"Adam Warlock",
-	"Cloak & Dagger",
-	"Deadpool (Strategist)",
-	"Gambit",
-	"Invisible Woman",
-	"Jeff the Land Shark",
-	"Loki",
-	"Luna Snow",
-	"Mantis",
-	"Rocket Raccoon",
-	"Ultron",
-	"White Fox",
-] as const;
-type Strategist = typeof Strategists[number];
-
-type Hero = Vanguard | Duelist | Strategist;
-
-function isVanguard(hero: Hero): boolean {
-	return Vanguards.includes(hero as Vanguard);
-}
-
-function isDuelist(hero: Hero): boolean {
-	return Duelists.includes(hero as Duelist);
-}
-
-function isStrategist(hero: Hero): boolean {
-	return Strategists.includes(hero as Strategist);
+class Hero {
+	name: HeroName = "Adam Warlock";
+	roles: Role[] = [];
+	teamups: Teamup[] = [];
+	disabled?: boolean = false;
+	selected?: boolean = false;
 }
 
 class Teamup {
 	name: string = "";
-	members: Hero[] = [];
+	hero: HeroName = "Adam Warlock";
 }
 
-const Teamups: Teamup[] = [
+const Heroes: Hero[] = [
 	{
-		name: "Planet X Pals",
-		members: [ "Groot", "Rocket Raccoon", "Jeff the Land Shark" ]
+		name: "Adam Warlock",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Cosmic Cyclone",
+				hero: "Storm"
+			},
+			{
+				name: "Flawless Design",
+				hero: "Ultron"
+			}
+		]
 	},
 	{
-		name: "Gamma Fastball",
-		members: [ "Wolverine", "Hulk", "The Thing" ]
+		name: "Angela",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Asgardians of the Galaxy",
+				hero: "Star-Lord"
+			},
+			{
+				name: "Odin's Unacknowledged",
+				hero: "Loki"
+			}
+		]
 	},
 	{
-		name: "Stars Aligned",
-		members: [ "Captain America", "Winter Soldier" ]
+		name: "Black Cat",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Feline Alliance",
+				hero: "Black Panther"
+			},
+			{
+				name: "Binding Ties",
+				hero: "Spider-Man"
+			}
+		]
 	},
 	{
-		name: "Stark Protocol",
-		members: [ "Iron Man", "Ultron", "Squirrel Girl" ]
+		name: "Black Panther",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Damisa-Yao",
+				hero: "Storm"
+			},
+			{
+				name: "Dimensional Shortcut",
+				hero: "Magik"
+			}
+		]
 	},
 	{
-		name: "Symbiote Shenanigans",
-		members: [ "Venom", "Jeff the Land Shark", "Hela" ]
+		name: "Black Widow",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Allied Agents",
+				hero: "Hawkeye"
+			},
+			{
+				name: "Burning Bullets",
+				hero: "Phoenix"
+			}
+		]
 	},
 	{
-		name: "Divine Armory",
-		members: [ "Angela", "Thor" ]
+		name: "Blade",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Blade of Khonshu",
+				hero: "Moon Knight"
+			},
+			{
+				name: "Bleed for Battle",
+				hero: "Captain America"
+			}
+		]
 	},
 	{
-		name: "Lunar Force",
-		members: [ "Cloak & Dagger", "Moon Knight", "Blade" ]
+		name: "Captain America",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Stars Aligned",
+				hero: "Winter Soldier"
+			},
+			{
+				name: "Voltaic Union",
+				hero: "Thor"
+			}
+		]
 	},
 	{
-		name: "Vibrant Vitality",
-		members: [ "Mantis", "Groot", "Loki" ]
+		name: "Cloak & Dagger",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Oblivion Shroud",
+				hero: "The Hood"
+			},
+			{
+				name: "Frozen Haven",
+				hero: "Luna Snow"
+			}
+		]
 	},
 	{
-		name: "First Steps",
-		members: [ "Human Torch", "The Thing" ]
+		name: "Cyclops",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Slim and Red",
+				hero: "Phoenix"
+			},
+			{
+				name: "Kinetic Kin",
+				hero: "Gambit"
+			}
+		]
 	},
 	{
-		name: "Arcane Order",
-		members: [ "Doctor Strange", "Scarlet Witch", "Magik" ]
+		name: "Daredevil",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Comprehensive Defense",
+				hero: "Iron Fist"
+			},
+			{
+				name: "Devilish Affair",
+				hero: "Black Widow"
+			}
+		]
 	},
 	{
-		name: "Bestial Hunt",
-		members: [ "Daredevil", "The Punisher" ]
+		name: "Deadpool",
+		roles: ["Vanguard", "Duelist", "Strategist"],
+		teamups: [
+			{
+				name: "Hel-Yeah, Honey",
+				hero: "Hela"
+			},
+			{
+				name: "Gumbo Chimichangas",
+				hero: "Gambit"
+			}
+		]
 	},
 	{
-		name: "Deep Wrath",
-		members: [ "Hela", "Namor" ]
+		name: "Devil Dinosaur",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Primal Punishment",
+				hero: "The Punisher"
+			},
+			{
+				name: "Surf & Turf",
+				hero: "Jeff the Land Shark"
+			}
+		]
 	},
 	{
-		name: "Blade of Khonshu",
-		members: [ "Moon Knight", "Blade" ]
+		name: "Doctor Strange",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Gamma Maelstrom",
+				hero: "Hulk"
+			},
+			{
+				name: "Psionic Vortex",
+				hero: "Invisible Woman"
+			}
+		]
 	},
 	{
-		name: "Primal Flame",
-		members: [ "Phoenix", "Black Widow" ]
+		name: "Elsa Bloodstone",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Prehistoric Trap",
+				hero: "Devil Dinosaur"
+			},
+			{
+				name: "Loudmouth Mercs",
+				hero: "Deadpool"
+			},
+		]
 	},
 	{
-		name: "Chilling Assault",
-		members: [ "Luna Snow", "Iron Fist", "Emma Frost" ]
+		name: "Emma Frost",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Spirit Breaker",
+				hero: "Mantis"
+			},
+			{
+				name: "Iced Out Diamond",
+				hero: "Luna Snow"
+			}
+		]
 	},
 	{
-		name: "Sword of Duality",
-		members: [ "Cloak & Dagger", "Hawkeye", "Psylocke" ]
+		name: "Gambit",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Favorable Odds",
+				hero: "Magneto"
+			},
+			{
+				name: "Sparkling Staff",
+				hero: "Jubilee"
+			}
+		]
 	},
 	{
-		name: "Explosive Entanglement",
-		members: [ "Gambit", "Magneto", "Rogue" ]
+		name: "Groot",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Wild Wall",
+				hero: "Mantis"
+			},
+			{
+				name: "Bubble Buddies",
+				hero: "Jeff the Land Shark"
+			}
+		]
 	},
 	{
-		name: "Parker Power-Up",
-		members: [ "Peni Parker", "Spider-Man" ]
+		name: "Hawkeye",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Senbonzakura Strike",
+				hero: "Psylocke"
+			},
+			{
+				name: "Moonlit Slash",
+				hero: "Cloak & Dagger"
+			}
+		]
 	},
 	{
-		name: "Mr Pool's Interdimensional Toy Box",
-		members: [ "Deadpool (Vanguard)", "Elsa Bloodstone", "Jeff the Land Shark" ]
+		name: "Hela",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Hel Tendrils",
+				hero: "Venom"
+			},
+			{
+				name: "Deep Wrath",
+				hero: "Namor"
+			}
+		]
 	},
 	{
-		name: "Mr Pool's Interdimensional Toy Box",
-		members: [ "Deadpool (Duelist)", "Elsa Bloodstone", "Jeff the Land Shark" ]
+		name: "Hulk",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Savage Slam",
+				hero: "Captain America"
+			},
+			{
+				name: "Gamma Fastball",
+				hero: "Wolverine"
+			}
+		]
 	},
 	{
-		name: "Mr Pool's Interdimensional Toy Box",
-		members: [ "Deadpool (Strategist)", "Elsa Bloodstone", "Jeff the Land Shark" ]
+		name: "Human Torch",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Fiery Sparks",
+				hero: "Jubilee"
+			},
+			{
+				name: "Storming Ignition",
+				hero: "Storm"
+			}
+		]
 	},
 	{
-		name: "Rocket Network",
-		members: [ "Rocket Raccoon", "Star-Lord", "Mister Fantastic" ]
+		name: "Invisible Woman",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "United Siblings",
+				hero: "Human Torch"
+			},
+			{
+				name: "First Family",
+				hero: "Mister Fantastic"
+			}
+		]
 	},
 	{
-		name: "Gamma Charge",
-		members: [ "Hulk", "The Thing", "Black Panther" ]
+		name: "Iron Fist",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Iron & Stone",
+				hero: "The Thing"
+			},
+			{
+				name: "Kumiho Palm",
+				hero: "White Fox"
+			}
+		]
 	},
 	{
-		name: "Psionite Mayhem",
-		members: [ "Invisible Woman", "Doctor Strange" ]
+		name: "Iron Man",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Gamma Charge",
+				hero: "Hulk"
+			},
+			{
+				name: "Thunder Overdrive",
+				hero: "Thor"
+			}
+		]
 	},
 	{
-		name: "Cosmic Cyclone",
-		members: [ "Storm", "Adam Warlock" ]
+		name: "Jeff the Land Shark",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Guardian of the Deep",
+				hero: "Venom"
+			},
+			{
+				name: "Mr. Pool's Interdimensional Toy Box",
+				hero: "Deadpool"
+			},
+		]
 	},
 	{
-		name: "Bless of the Kumiho",
-		members: [ "White Fox", "Luna Snow" ]
+		name: "Jubilee",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Hellfire Sparks",
+				hero: "The Hood"
+			},
+			{
+				name: "Vampiric Kin",
+				hero: "Blade"
+			}
+		]
 	},
 	{
-		name: "Lucky Loan",
-		members: [ "Black Cat", "Captain America", "White Fox" ]
+		name: "Loki",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Villain's Illusion",
+				hero: "Hela"
+			},
+			{
+				name: "Vibrant Vitality",
+				hero: "Mantis"
+			}
+		]
 	},
 	{
-		name: "Primal Punishment",
-		members: [ "Devil Dinosaur", "The Punisher" ]
+		name: "Luna Snow",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Atlas Bond",
+				hero: "White Fox"
+			},
+			{
+				name: "Duality Dance",
+				hero: "Adam Warlock"
+			}
+		]
 	},
 	{
-		name: "Blast Slash",
-		members: [ "Cyclops", "Wolverine" ]
+		name: "Magik",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Chain of Cyttorak",
+				hero: "Doctor Strange"
+			},
+			{
+				name: "Void Pentagram",
+				hero: "The Hood"
+			}
+		]
 	},
-]
+	{
+		name: "Magneto",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Metallic Chaos",
+				hero: "Scarlet Witch"
+			},
+			{
+				name: "Magnetic Resonance",
+				hero: "Emma Frost"
+			}
+		]
+	},
+	{
+		name: "Mantis",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Star Blossom",
+				hero: "Star-Lord"
+			},
+			{
+				name: "Vitality Pact",
+				hero: "Adam Warlock"
+			}
+		]
+	},
+	{
+		name: "Mister Fantastic",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Fantastic Amplifier",
+				hero: "Rocket Raccoon"
+			},
+			{
+				name: "Clobberin' Research Dept.",
+				hero: "The Thing"
+			}
+		]
+	},
+	{
+		name: "Moon Knight",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Luminous Moon",
+				hero: "Cloak & Dagger"
+			},
+			{
+				name: "Blood Moon",
+				hero: "Elsa Bloodstone"
+			}
+		]
+	},
+	{
+		name: "Namor",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Gamma Monstro",
+				hero: "Hulk"
+			},
+			{
+				name: "Chilling Charisma",
+				hero: "Luna Snow"
+			}
+		]
+	},
+	{
+		name: "Peni Parker",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Vibranium Mech",
+				hero: "Black Panther"
+			},
+			{
+				name: "Rocket network",
+				hero: "Rocket Raccoon"
+			}
+		]
+	},
+	{
+		name: "Phoenix",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Circle of Life",
+				hero: "Hela"
+			},
+			{
+				name: "Telekinetic beatdown",
+				hero: "Rogue"
+			}
+		]
+	},
+	{
+		name: "Psylocke",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Mental Projection",
+				hero: "Emma Frost"
+			},
+			{
+				name: "Light & Dark Darts",
+				hero: "Cloak & Dagger"
+			}
+		]
+	},
+	{
+		name: "Rocket Raccoon",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Mammalian Bond",
+				hero: "Squirrel Girl"
+			},
+			{
+				name: "Planet X Pals",
+				hero: "Groot"
+			}
+		]
+	},
+	{
+		name: "Rogue",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Mr. & Mrs. X",
+				hero: "Gambit"
+			},
+			{
+				name: "Explosive Entanglement",
+				hero: "Magneto"
+			}
+		]
+	},
+	{
+		name: "Scarlet Witch",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Sorcerers Supreme",
+				hero: "Doctor Strange"
+			},
+			{
+				name: "Hex Fireworks",
+				hero: "Jubilee"
+			}
+		]
+	},
+	{
+		name: "Spider-Man",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Symbiote Bond",
+				hero: "Venom"
+			},
+			{
+				name: "Parker Power-Up",
+				hero: "Peni Parker"
+			}
+		]
+	},
+	{
+		name: "Squirrel Girl",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Squirrel Missile",
+				hero: "Iron Man"
+			},
+			{
+				name: "ESU Alumnus",
+				hero: "Spider-Man"
+			}
+		]
+	},
+	{
+		name: "Star-Lord",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Flora Munitions",
+				hero: "Groot"
+			},
+			{
+				name: "Star-Soul",
+				hero: "Adam Warlock"
+			}
+		]
+	},
+	{
+		name: "Storm",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "God of Thunder",
+				hero: "Thor"
+			},
+			{
+				name: "Jaws of Fate",
+				hero: "Jeff the Land Shark"
+			}
+		]
+	},
+	{
+		name: "The Punisher",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Bestial Hunt",
+				hero: "Daredevil"
+			},
+			{
+				name: "Ammo Overload",
+				hero: "Rocket Raccoon"
+			}
+		]
+	},
+	{
+		name: "The Thing",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Two in One",
+				hero: "Human Torch"
+			},
+			{
+				name: "Unbreakable Forces",
+				hero: "Invisible Woman"
+			}
+		]
+	},
+	{
+		name: "Thor",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Ragnarok Rebirth",
+				hero: "Hela"
+			},
+			{
+				name: "Divine Armory",
+				hero: "Angela"
+			}
+		]
+	},
+	{
+		name: "Ultron",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Stark Protocol",
+				hero: "Iron Man"
+			},
+			{
+				name: "SP//DR Sync",
+				hero: "Peni Parker"
+			}
+		]
+	},
+	{
+		name: "Venom",
+		roles: ["Vanguard"],
+		teamups: [
+			{
+				name: "Blood Leech",
+				hero: "Blade"
+			},
+			{
+				name: "Abyssal Flames",
+				hero: "Phoenix"
+			}
+		]
+	},
+	{
+		name: "White Fox",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Lucky Loan",
+				hero: "Black Cat"
+			},
+			{
+				name: "Psionic Fox",
+				hero: "Psylocke"
+			}
+		]
+	},
+	{
+		name: "Winter Soldier",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Timeless Veterans",
+				hero: "The Punisher"
+			},
+			{
+				name: "Expert Instinct",
+				hero: "Elsa Bloodstone"
+			}
+		]
+	},
+	{
+		name: "Wolverine",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Blast Slash",
+				hero: "Cyclops"
+			},
+			{
+				name: "Pair of Threes",
+				hero: "Gambit"
+			}
+		]
+	}
+];
+
+function getHero(name: HeroName): Hero | null {
+	const result = Heroes.find((val) => val.name === name);
+	return result ?? null;
+}
