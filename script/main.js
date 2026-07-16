@@ -648,7 +648,7 @@ var Heroes = [
                 hero: "Black Panther"
             },
             {
-                name: "Rocket network",
+                name: "Rocket Network",
                 hero: "Rocket Raccoon"
             }
         ]
@@ -662,7 +662,7 @@ var Heroes = [
                 hero: "Hela"
             },
             {
-                name: "Telekinetic beatdown",
+                name: "Telekinetic Beatdown",
                 hero: "Rogue"
             }
         ]
@@ -1412,7 +1412,15 @@ function RandomizeSection() {
         randomize();
         if (gData.disablePrevHeroes)
             gHandlers.disableHeroes(gData.results);
+        // Fix size from jittering
         resultsRef.setRaw("style", "min-height: " + resultsRef.get("offsetHeight") + "px;");
+        var doneLoading = 0;
+        var onImgLoaded = function () {
+            ++doneLoading;
+            if (doneLoading === gData.results.length) {
+                resultsRef.setRaw("style", "");
+            }
+        };
         resultsRef.elem().replaceChildren();
         resultsRef.open();
         var row = null;
@@ -1425,8 +1433,8 @@ function RandomizeSection() {
             var heroName = hero.hero.roles.length > 1 ? hero.hero.name + " (" + hero.role + ")" : hero.hero.name;
             var h5Ref = RatchetReact.New("h5");
             row.open()
-                .add("div").setRaw("style", "text-align: center;").open()
-                .add("img").set("src", "img/hero/" + heroName + ".png")
+                .add("article").setRaw("style", "text-align: center; padding: 5px;").open()
+                .add("img").set("src", "img/hero/" + heroName + ".png").set("onload", onImgLoaded)
                 .addRef(h5Ref).set("textContent", heroName)
                 .close()
                 .close();
@@ -1441,7 +1449,7 @@ function RandomizeSection() {
                 }
                 var filename = "img/ability/" + hero.teamup.name.replace("//", "^^") + ".png";
                 var divRef = RatchetReact.New("div");
-                h5Ref.add("img").set("src", filename)
+                h5Ref.add("img").set("src", filename).setRaw("style", "max-height: 100px;")
                     .addRef(divRef).set("textContent", hero.teamup.name);
                 if (boosted) {
                     divRef.setRaw("style", "border-bottom: none; font-weight: bold;").setRaw("data-placement", "bottom").setRaw("data-tooltip", "Boosted by " + hero.teamup.hero);

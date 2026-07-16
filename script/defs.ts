@@ -555,7 +555,7 @@ const Heroes: Hero[] = [
 				hero: "Black Panther"
 			},
 			{
-				name: "Rocket network",
+				name: "Rocket Network",
 				hero: "Rocket Raccoon"
 			}
 		]
@@ -569,7 +569,7 @@ const Heroes: Hero[] = [
 				hero: "Hela"
 			},
 			{
-				name: "Telekinetic beatdown",
+				name: "Telekinetic Beatdown",
 				hero: "Rogue"
 			}
 		]

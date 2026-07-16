@@ -531,7 +531,16 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 		randomize();
 		if (gData.disablePrevHeroes) gHandlers.disableHeroes(gData.results);
 
+		// Fix size from jittering
 		resultsRef.setRaw("style", "min-height: " + resultsRef.get("offsetHeight") + "px;");
+		let doneLoading = 0;
+		const onImgLoaded = () => {
+			++doneLoading;
+			if (doneLoading === gData.results.length) {
+				resultsRef.setRaw("style", "");
+			}
+		}
+
 		resultsRef.elem().replaceChildren();
 
 		resultsRef.open();
@@ -545,8 +554,8 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 			const heroName = hero.hero.roles.length > 1 ? hero.hero.name + " (" + hero.role + ")" : hero.hero.name;
 			const h5Ref = RatchetReact.New("h5");
 			row.open()
-				.add("div").setRaw("style", "text-align: center;").open()
-					.add("img").set("src", "img/hero/" + heroName + ".png")
+				.add("article").setRaw("style", "text-align: center; padding: 5px;").open()
+					.add("img").set("src", "img/hero/" + heroName + ".png").set("onload", onImgLoaded)
 					.addRef(h5Ref).set("textContent", heroName)
 				.close()
 			.close();
@@ -562,7 +571,7 @@ function RandomizeSection(): RatchetReact<HTMLElement> {
 				const filename = "img/ability/" + hero.teamup.name.replace("//", "^^") + ".png";
 				const divRef = RatchetReact.New("div");
 
-				h5Ref.add("img").set("src", filename)
+				h5Ref.add("img").set("src", filename).setRaw("style", "max-height: 100px;")
 				.addRef(divRef).set("textContent", hero.teamup.name)
 				if (boosted) {
 					divRef.setRaw("style", "border-bottom: none; font-weight: bold;").setRaw("data-placement", "bottom").setRaw("data-tooltip", "Boosted by " + hero.teamup.hero);
