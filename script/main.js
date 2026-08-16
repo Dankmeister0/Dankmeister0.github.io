@@ -780,6 +780,20 @@ var Heroes = [
         ]
     },
     {
+        name: "The Hood",
+        roles: ["Vanguard"],
+        teamups: [
+            {
+                name: "Chaos Collision",
+                hero: "Scarlet Witch"
+            },
+            {
+                name: "No Moon's Shadow",
+                hero: "Moon Knight"
+            }
+        ]
+    },
+    {
         name: "The Punisher",
         roles: ["Duelist"],
         teamups: [
