@@ -18,6 +18,7 @@ type HeroName =
 	"Elsa Bloodstone" |
 	"Emma Frost" |
 	"Gambit" |
+	"Gorr the God Butcher" |
 	"Groot" |
 	"Hawkeye" |
 	"Hela" |
@@ -291,6 +292,20 @@ const Heroes: Hero[] = [
 			{
 				name: "Sparkling Staff",
 				hero: "Jubilee"
+			}
+		]
+	},
+	{
+		name: "Gorr the God Butcher",
+		roles: ["Duelist"],
+		teamups: [
+			{
+				name: "Ragnarök",
+				hero: "Hela"
+			},
+			{
+				name: "Hive Mind",
+				hero: "Venom"
 			}
 		]
 	},

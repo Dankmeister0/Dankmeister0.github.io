@@ -388,6 +388,20 @@ var Heroes = [
         ]
     },
     {
+        name: "Gorr the God Butcher",
+        roles: ["Duelist"],
+        teamups: [
+            {
+                name: "Ragnarök",
+                hero: "Hela"
+            },
+            {
+                name: "Hive Mind",
+                hero: "Venom"
+            }
+        ]
+    },
+    {
         name: "Groot",
         roles: ["Vanguard"],
         teamups: [
