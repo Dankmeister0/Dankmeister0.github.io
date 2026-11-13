@@ -654,6 +654,20 @@ var Heroes = [
         ]
     },
     {
+        name: "Nightcrawler",
+        roles: ["Strategist"],
+        teamups: [
+            {
+                name: "Protective Siblings",
+                hero: "Rogue"
+            },
+            {
+                name: "Demon Disciple",
+                hero: "Magik"
+            }
+        ]
+    },
+    {
         name: "Peni Parker",
         roles: ["Vanguard"],
         teamups: [

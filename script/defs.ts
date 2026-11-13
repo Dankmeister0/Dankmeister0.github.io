@@ -37,6 +37,7 @@ type HeroName =
 	"Mister Fantastic" |
 	"Moon Knight" |
 	"Namor" |
+	"Nightcrawler" |
 	"Peni Parker" |
 	"Phoenix" |
 	"Psylocke" |
@@ -558,6 +559,20 @@ const Heroes: Hero[] = [
 			{
 				name: "Chilling Charisma",
 				hero: "Luna Snow"
+			}
+		]
+	},
+	{
+		name: "Nightcrawler",
+		roles: ["Strategist"],
+		teamups: [
+			{
+				name: "Protective Siblings",
+				hero: "Rogue"
+			},
+			{
+				name: "Demon Disciple",
+				hero: "Magik"
 			}
 		]
 	},
